@@ -60,6 +60,7 @@
   .flow figcaption { margin: var(--space-4) 0 0; font-size: var(--fs-sm); color: var(--fg-2); max-width: 72ch; }
 
   section.band { padding: var(--space-8) 0; border-bottom: 1px solid var(--border); }
+  .tryit-note { margin: 0 0 var(--space-5); color: var(--fg-2); max-width: 70ch; }
   .demos { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: var(--space-5); }
   .demo { display: flex; flex-direction: column; gap: var(--space-2); text-decoration: none; color: inherit; border-top: 3px solid var(--brand); border-top-left-radius: var(--radius-lg); border-top-right-radius: var(--radius-lg); }
   .demo.kiosk { border-top-color: var(--smart-teal); }
@@ -69,17 +70,6 @@
   .demo h3 { margin: var(--space-2) 0 0; font-size: var(--fs-md); letter-spacing: var(--tracking-snug); }
   .demo p { margin: 0; font-size: var(--fs-sm); color: var(--fg-2); flex: 1; }
   .demo .go { margin-top: var(--space-2); color: var(--brand); font-weight: 600; font-size: var(--fs-sm); }
-  .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-8); align-items: start; }
-  .facts { margin: 0; border-top: 1px solid var(--border); }
-  .facts div { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: var(--space-5); padding: var(--space-3) 0; border-bottom: 1px solid var(--border); font-size: var(--fs-sm); }
-  .facts dt { color: var(--fg-3); }
-  .facts dd { margin: 0; color: var(--fg-2); }
-  .status { margin: 0; padding: 0; list-style: none; }
-  .status li { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: var(--space-5); padding: var(--space-3) 0; border-top: 1px solid var(--border); font-size: var(--fs-sm); color: var(--fg-2); }
-  .status .tag { font-size: var(--fs-xs); font-weight: 700; letter-spacing: var(--tracking-caps); text-transform: uppercase; }
-  .status .yes .tag { color: var(--success); }
-  .status .draft .tag { color: var(--warning); }
-  .status .no .tag { color: var(--fg-3); }
 
   @media (max-width: 62rem) {
     .two { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
@@ -171,6 +161,7 @@
 <section class="band">
   <div class="page">
     <h2>Try it</h2>
+    <p class="tryit-note">These answer with this project's reference wallets — a web wallet, and an Android app in the spec repo — or a mock. There are no production patient wallets yet.</p>
     <div class="demos">
       <a class="smart-panel demo" href="/client/demo/#wallet=platform">
         <span class="smart-chip info">Online</span>
@@ -194,32 +185,6 @@
   </div>
 </section>
 
-<section class="band">
-  <div class="page two">
-    <div>
-      <h2>The wire</h2>
-      <dl class="facts">
-        <div><dt>Protocol id</dt><dd><code>org-iso-mdoc</code>, direct — no OpenID4VP layer</dd></div>
-        <div><dt>docType</dt><dd><code>org.smarthealthit.checkin.1</code></dd></div>
-        <div><dt>Payload</dt><dd>The whole response JSON in one mdoc element</dd></div>
-        <div><dt>Encryption</dt><dd>HPKE, to a key your page mints per request</dd></div>
-        <div><dt>Signatures</dt><dd>COSE_Sign1 over the MSO, plus a device signature</dd></div>
-        <div><dt>Origin binding</dt><dd>In the session transcript — a response captured elsewhere will not open</dd></div>
-      </dl>
-    </div>
-    <div>
-      <h2>Where this stands</h2>
-      <ul class="status">
-        <li class="yes"><span class="tag">Works</span>
-          <span>Verified byte for byte against real Chrome-on-Android captures. Desktop gets a QR code the phone answers.</span></li>
-        <li class="draft"><span class="tag">Draft</span>
-          <span>An editor's draft. Identifiers, wire format and clinical model are stable; wording is still moving.</span></li>
-        <li class="no"><span class="tag">Missing</span>
-          <span>Real patient wallets. There is a reference web wallet, an Android wallet, and a mock for tests.</span></li>
-      </ul>
-    </div>
-  </div>
-</section>
 
 <div data-smart-footer></div>
 
