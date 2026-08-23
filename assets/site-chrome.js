@@ -43,14 +43,12 @@
     {
       label: 'JS client', href: '/client/', match: /^\/client\/(?!demo\/)/, llms: '/client/',
       items: [
-        { href: '/client/', label: 'Overview & install' },
-        { href: '/client/docs/getting-started.html', label: 'Getting started' },
+        { href: '/client/', label: 'Getting started' },
         { href: '/client/docs/requests.html', label: 'Request model' },
         { href: '/client/docs/responses.html', label: 'Response model' },
         { href: '/client/docs/wallets.html', label: 'Wallets' },
         { href: '/client/docs/kiosk.html', label: 'Kiosk hand-off' },
-        { href: '/client/docs/api/', label: 'API reference' },
-        { href: '/client/docs/', label: 'All guides' }
+        { href: '/client/docs/api/', label: 'API reference' }
       ]
     },
     {
@@ -73,8 +71,7 @@
       { href: 'https://github.com/smart-health-checkin/spec/tree/main/fixtures', label: 'Conformance fixtures', ext: true }
     ] },
     { title: 'JS client', links: [
-      { href: '/client/', label: 'Overview & install' },
-      { href: '/client/docs/getting-started.html', label: 'Getting started' },
+      { href: '/client/', label: 'Getting started' },
       { href: '/client/docs/api/', label: 'API reference' },
       { href: '/client/docs/wallets.html', label: 'Wallets & browser support' }
     ] },
