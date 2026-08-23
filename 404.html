@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Not found — SMART Health Check-in</title>
+<link rel="stylesheet" href="/assets/smart-design.css">
+<script src="/assets/site-chrome.js" defer></script>
+<script>
+  // The JavaScript client used to live at the apex; it is at /client/ now.
+  // Forward the paths that were linkable — demo pages, docs, hosted modules —
+  // keeping the rest of the path, the query, and the fragment.
+  (function () {
+    var m = location.pathname.match(/^\/(demo|docs|lib)(\/.*)?$/);
+    if (m) location.replace("/client/" + m[1] + (m[2] || "/") + location.search + location.hash);
+  })();
+</script>
+<style>
+  body { margin:0; background:var(--bg); color:var(--fg-1); font-family:var(--font-sans); font-size:var(--fs-base); line-height:var(--lh-normal); }
+  main { max-width:var(--container-wide); margin:0 auto; padding:var(--space-9) 24px; }
+  h1 { margin:0 0 var(--space-3); font-size:var(--fs-2xl); letter-spacing:var(--tracking-tight); }
+  p { color:var(--fg-2); max-width:60ch; }
+  a { color:var(--brand); }
+</style>
+</head>
+<body>
+<div data-smart-topbar></div>
+<main>
+  <h1>There's nothing at this address</h1>
+  <p>The <a href="/">overview</a>, the <a href="/spec/">specification</a>, the <a href="/client/">JavaScript client</a>, and the <a href="/client/demo/">demos</a> are all a click away.</p>
+</main>
+<div data-smart-footer></div>
+</body>
+</html>
