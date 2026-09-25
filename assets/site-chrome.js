@@ -61,6 +61,16 @@
         { href: '/client/demo/angular.html', label: 'Angular example' },
         { href: '/client/demo/wallet.html', label: 'Demo wallet', note: 'The responder side' }
       ]
+    },
+    {
+      label: 'Connectathon', href: '/connectathon/', match: /^\/connectathon\//,
+      items: [
+        { href: '/connectathon/', label: 'Scenarios', note: 'KTC pre-visit check-in testing' },
+        { href: '/connectathon/directory.html', label: 'Directory', note: 'Who is testing what' },
+        { href: '/connectathon/results.html', label: 'Results' },
+        { href: '/connectathon/requests/', label: 'Requests' },
+        { href: '/connectathon/web-wallet-handoff.html', label: 'Web wallet hand-off' }
+      ]
     }
   ];
 
