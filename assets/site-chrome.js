@@ -245,7 +245,26 @@
         closeAll(dd);
         dd.setAttribute('data-open', open ? 'false' : 'true');
         t.setAttribute('aria-expanded', open ? 'false' : 'true');
+        if (!open) keepInViewport(dd.querySelector('.dropdown-menu'));
       });
+    });
+    // A menu opens from its trigger's left edge (right edge on narrow
+    // screens). Near either side of the window that can push it off screen,
+    // so shift it back inside once it's laid out.
+    function keepInViewport(menu) {
+      if (!menu) return;
+      menu.style.transform = '';
+      var margin = 8;
+      var rect = menu.getBoundingClientRect();
+      var width = document.documentElement.clientWidth;
+      var shift = 0;
+      if (rect.right > width - margin) shift = (width - margin) - rect.right;
+      if (rect.left + shift < margin) shift = margin - rect.left;
+      if (shift) menu.style.transform = 'translateX(' + Math.round(shift) + 'px)';
+    }
+    window.addEventListener('resize', function () {
+      var open = root.querySelector('.dropdown[data-open="true"] > .dropdown-menu');
+      if (open) keepInViewport(open);
     });
     document.addEventListener('click', function (e) {
       if (!e.target.closest || !e.target.closest('.dropdown')) closeAll(null);
