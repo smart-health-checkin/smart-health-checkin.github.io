@@ -48,6 +48,8 @@ Nothing is shared by copying files between repos, and there are no submodules.
 | Nightly | connectathon: self-test, and the Android end-to-end run against the latest APK |
 | Hourly | connectathon: site rebuild (registry, results) and wallet-registry liveness |
 | Push or PR in android-wallet, swift | Their tests, which fetch the pinned spec fixtures and conformance cases |
+| Pull request in spec | `check.yml`: the full spec build and its checks, without deploying |
+| Push to a non-`main` branch or PR in client | `ci.yml`: typecheck, tests, conformance |
 | Participant PR in connectathon | Validated, and auto-merged when the author owns the participant file |
 
 No workflow triggers another repository. A client or wallet release reaches a
@@ -60,7 +62,7 @@ nightly run (the APK, which connectathon takes from `latest`).
 
 1. In client, set `version` in `package.json`, and move the docs' pinned
    URLs (`/client/lib/<version>/…`, the tarball URL) to the new version:
-   `grep -rn "0\.2\.1" docs README.md` finds them.
+   `grep -rn "<old version>" docs README.md` finds them.
 2. Commit, push `main`, then `git tag -a vX.Y.Z -m vX.Y.Z && git push origin vX.Y.Z`.
 3. Watch `release.yml`. The release notes open with the install line.
 4. Update consumers (each is a one-line change to the tarball URL, then `bun install` and commit the lockfile):
@@ -116,11 +118,62 @@ Not versioned. Push to `main` and they deploy.
   part of the spec. Deeper links into another repo's pages can break without
   that repo knowing.
 
-## Checks worth running after cross-repo changes
+## Testing
 
-- `bun scripts/self-test.ts` in connectathon: the live Testing EHR against the
-  live testing wallet, every scenario and fault.
-- `scripts/build-pages.sh` in client: builds every hosted bundle, runs them,
-  and checks every link inside the client site.
-- `scripts/build-pages.sh` in spec: validates every JSON example in the model
-  explainer against the client's validators.
+Each layer has its own check, so a problem shows up where it starts. Run the
+narrowest one that covers a change; CI runs the rest.
+
+| What it proves | Check | Runs | Run it locally |
+| --- | --- | --- | --- |
+| The spec is consistent: requirement IDs unique, JSON examples valid, CDDL matches the real capture, Appendix A recomputes from it, old anchors and links resolve | spec `scripts/build-pages.sh` | spec push to `main` and PRs | `bun install && scripts/build-pages.sh` (needs `gem install cddl`) |
+| Each implementation meets the spec, one capability at a time | the spec's conformance cases, with a `known-failures.json` per implementation (all empty today) | CI in client, android-wallet, swift, connectathon | each repo's test command (see its `AGENTS.md`) |
+| Each wallet's output is accepted by the reference verifier | `spec-conformance/reference/verify-wallet-output.ts` on credentials the wallet built | android-wallet and swift CI | see android-wallet and swift `AGENTS.md` |
+| The client library's hosted bundles run, and every docs link resolves | client `scripts/build-pages.sh` (`verify-lib.ts`, `check-links.ts`) | client push to `main` | `scripts/build-pages.sh` |
+| The web flow works end to end: the live Testing EHR against the live testing wallet, every scenario and fault, warnings where the spec says warn | connectathon `scripts/self-test.ts` | after every connectathon deploy, and nightly | `bun scripts/self-test.ts` (or against a local build: see connectathon `AGENTS.md`) |
+| Chrome on Android, the reference Android wallet, and the Testing EHR work together | connectathon `scripts/android-e2e.ts` | nightly on an emulator in CI, with the latest APK | `bun scripts/android-e2e.ts --release` with an emulator or phone |
+| A native Android app can check in directly and through the browser (bridge page, message channel, large responses) | android-wallet `tools/verifier-app-e2e/run.ts` | local only (needs an emulator with Chrome) | see android-wallet `AGENTS.md` |
+| The reference EHR demo still works against a wallet | connectathon `scripts/e2e-demo.ts` | by hand | `bun scripts/e2e-demo.ts` |
+
+Before a release, the releasing repo's own checks must pass. After a release,
+bump the consumers and let their CI run (see Releasing). After a change that
+crosses repos, run the self-test.
+
+## Native apps
+
+A native app checks in through the web flow (platform notes and the client's
+Native apps guide explain why). Three repos hold the pieces:
+
+- **The bridge page** is `demo/native-bridge.html` in client, served at
+  `/client/demo/native-bridge.html`. It runs the normal client library and
+  returns the checked result over a Custom Tabs message channel, in pieces.
+- **`/.well-known/assetlinks.json`** in the apex vouches for the example app,
+  so Chrome grants the channel. It names the app's package
+  (`org.smarthealthit.checkin.verifier`) and the SHA-256 of its signing
+  certificate. Change it whenever either changes. Google's link service takes
+  a few minutes to notice, and Chrome caches the old answer until its HTTP
+  cache is cleared.
+- **`verifier-app`** in android-wallet is the example app, with both the
+  direct Credential Manager path and the browser path, and the end-to-end test
+  above.
+
+## Experience reporting
+
+The connectathon collects free-text experience reports through a Google Form
+(<https://forms.gle/fXJf1H3zfZcyTNum7>). Reports are public, credited with the
+name and organization people give. The prompts that help people write a report,
+and the "Share your experience" page that offers them, live in connectathon
+(details in its `AGENTS.md`).
+
+To change the form, edit `connectathon/tools/experience-form/form.gs`, open the
+form's editor, three-dot menu > Apps Script, paste, and run `buildForm`. It
+rebuilds the form in place, keeping its address and responses. The script
+needs only the `forms.currentonly` scope, set in the project's
+`appsscript.json`.
+
+## Secrets and settings
+
+| Where | What | Used for |
+| --- | --- | --- |
+| android-wallet repo secret `ANDROID_DEBUG_KEYSTORE_B64` | The shared debug signing key (certificate SHA-256 `84:64:3E:B6:…:DD:A4`) | Signing every wallet release and `verifier-app`, so releases install over each other and `assetlinks.json` matches. The release fails if the APK has any other signer. |
+| client repo setting | Immutable releases | Published client releases can't be edited or replaced |
+| `GITHUB_TOKEN` in workflows | Built in | Client's site build reads releases; connectathon's build reads result issues |

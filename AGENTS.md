@@ -13,3 +13,7 @@ how to release. Read it before changing anything that crosses repositories.
   Check the pages of each section after changing them.
 - Menus belong to the sections: each publishes `nav.json`. Only edit
   `SECTIONS` in `assets/site-chrome.js` to add or rename a whole section.
+- `/.well-known/assetlinks.json` vouches for the example native app
+  (`org.smarthealthit.checkin.verifier`, shared signing key) so Chrome grants
+  the client bridge page's message channel. Update it if the app's package or
+  signing key changes (MAINTAINING.md, "Native apps").
