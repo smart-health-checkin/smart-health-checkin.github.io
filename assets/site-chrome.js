@@ -41,14 +41,18 @@
       ]
     },
     {
-      label: 'JS client', href: '/client/', match: /^\/client\/(?!demo\/)/, llms: '/client/',
+      // Mirrors the client docs' nav.json (https://smart-health-checkin.org/client/nav.json),
+      // generated from client/scripts/site-nav.ts. Keep the two in step.
+      label: 'Developers', href: '/client/', match: /^\/client\/(?!demo\/)/, llms: '/client/',
       items: [
-        { href: '/client/', label: 'Getting started' },
-        { href: '/client/docs/requests.html', label: 'Request model' },
-        { href: '/client/docs/responses.html', label: 'Response model' },
-        { href: '/client/docs/wallets.html', label: 'Wallets' },
-        { href: '/client/docs/kiosk.html', label: 'Kiosk hand-off' },
-        { href: '/client/docs/api/', label: 'API reference' }
+        { href: '/client/docs/tutorial.html', label: 'Tutorial', note: 'Build a check-in page, end to end' },
+        { href: '/client/docs/requests.html', label: 'Asking for data', note: 'Items, records, forms, formats' },
+        { href: '/client/docs/wallets.html', label: 'Offering wallets', note: 'The picker, registries, kiosks' },
+        { href: '/client/docs/responses.html', label: 'Using the answer', note: 'Lookups, health cards, prefill, FHIR' },
+        { href: '/client/docs/production.html', label: 'Going to production', note: 'Keys, trust, fallback, privacy' },
+        { href: '/client/docs/build-a-wallet.html', label: 'Building a wallet', note: 'For health-app builders' },
+        { href: '/client/docs/testing.html', label: 'Testing', note: 'Mock wallet, testing tools, failures' },
+        { href: '/client/docs/api/', label: 'API reference', note: 'Every export, by module' }
       ]
     },
     {
@@ -80,10 +84,11 @@
       { href: '/spec/spec.md', label: 'Spec source' },
       { href: 'https://github.com/smart-health-checkin/spec/tree/main/fixtures', label: 'Conformance fixtures', ext: true }
     ] },
-    { title: 'JS client', links: [
-      { href: '/client/', label: 'Getting started' },
-      { href: '/client/docs/api/', label: 'API reference' },
-      { href: '/client/docs/wallets.html', label: 'Wallets & browser support' }
+    { title: 'Developers', links: [
+      { href: '/client/', label: 'Overview' },
+      { href: '/client/docs/tutorial.html', label: 'Tutorial' },
+      { href: '/client/docs/build-a-wallet.html', label: 'Building a wallet' },
+      { href: '/client/docs/api/', label: 'API reference' }
     ] },
     { title: 'Try it', links: [
       { href: '/client/demo/', label: 'Clinic check-in demo' },
