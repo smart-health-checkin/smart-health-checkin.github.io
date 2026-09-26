@@ -1158,6 +1158,10 @@ html.smart-menu-open, html.smart-menu-open body { overflow: hidden; }
   white-space: nowrap;
 }
 .smart-table td.num, .smart-table th.num { text-align: right; }
+/* Identifiers in cells stay whole, so a wide table scrolls in its wrapper
+   instead of breaking them mid-word. */
+.smart-table code,
+.smart-prose table code { overflow-wrap: normal; }
 
 /* --- code: blocks and inline --- */
 .smart-code,
