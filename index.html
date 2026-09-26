@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="auto">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,7 +13,7 @@
 <style>
   * { box-sizing: border-box; }
   body {
-    margin: 0; background: var(--bg); color: var(--fg-1);
+    margin: 0;
     font-family: var(--font-sans); font-size: var(--fs-base); line-height: var(--lh-normal);
     -webkit-font-smoothing: antialiased;
   }
@@ -24,7 +24,6 @@
   h1 { margin: 0; font-size: var(--fs-3xl); letter-spacing: var(--tracking-tight); line-height: var(--lh-tight); max-width: 22ch; }
   h2 { margin: 0 0 var(--space-4); font-size: var(--fs-xl); letter-spacing: var(--tracking-tight); }
   a { color: var(--brand); }
-  code { font-family: var(--font-mono); font-size: 0.88em; background: var(--gray-100); padding: 1px 5px; border-radius: var(--radius-sm); color: var(--fg-1); }
 
   .hero { padding: var(--space-8) 0; border-bottom: 1px solid var(--border); }
   .eyebrow { margin: 0 0 var(--space-4); font-size: var(--fs-xs); font-weight: 700; letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--brand); }
@@ -43,19 +42,20 @@
 
   /* --- the exchange: request, the person's choices, response --- */
   .flow { margin: var(--space-8) 0 0; }
-  .node { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--gray-50); overflow: hidden; }
-  .node .cap { padding: 8px var(--space-4); border-bottom: 1px solid var(--border); background: var(--surface); font-size: var(--fs-sm); color: var(--fg-3); }
+  /* A .smart-panel.flush card: a caption over a .smart-code block that
+     fills the card edge to edge. */
+  .node .cap { padding: 8px var(--space-4); border-bottom: 1px solid var(--border); font-size: var(--fs-sm); color: var(--fg-3); }
   .node .cap b { color: var(--fg-1); font-weight: 600; }
-  .node pre { margin: 0; padding: var(--space-4); overflow-x: auto; }
-  pre code { background: none; padding: 0; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.6; color: var(--fg-1); }
-  .s { color: var(--smart-teal); }
-  .flow .ok { color: #12705E; font-weight: 600; }
-  .flow .no { color: #A32A22; font-weight: 600; }
+  .node .smart-code { margin: 0; border: 0; border-radius: 0; padding: var(--space-4); }
+  /* Hand-highlighted samples: keys and strings take the shared syntax
+     colors (.sj-k, .sj-s from smart-design.css); statuses take the status colors. */
+  .flow .ok { color: var(--status-ok); font-weight: 600; }
+  .flow .no { color: var(--status-bad); font-weight: 600; }
   /* one colour per item, so the same id reads across request, wallet, and response */
   .id { padding: 0 4px; border-radius: var(--radius-sm); font-weight: 600; }
-  .id.a { background: var(--success-wash); color: #12705E; }
-  .id.b { background: var(--info-wash);    color: var(--brand-ink); }
-  .id.c { background: var(--warning-wash); color: #7A5A16; }
+  .id.a { background: var(--status-ok-wash);   color: var(--status-ok); }
+  .id.b { background: var(--status-info-wash); color: var(--status-info); }
+  .id.c { background: var(--status-warn-wash); color: var(--status-warn); }
 
   .hop { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-4); color: var(--fg-3); font-family: var(--font-mono); font-size: var(--fs-xs); }
   .hop svg { color: var(--border-strong); flex: none; }
@@ -66,8 +66,8 @@
   .pick i { width: 10px; height: 10px; border-radius: 50%; }
   .pick.a i { background: var(--smart-teal); } .pick.b i { background: var(--brand-bright); } .pick.c i { background: var(--smart-orange); }
   .pick b { font-weight: 700; }
-  .pick.yes b { color: #12705E; }
-  .pick.no { color: var(--fg-3); } .pick.no b { color: #A32A22; }
+  .pick.yes b { color: var(--status-ok); }
+  .pick.no { color: var(--fg-3); } .pick.no b { color: var(--status-bad); }
 
   .flow figcaption { margin: var(--space-4) 0 0; font-size: var(--fs-sm); color: var(--fg-2); max-width: 72ch; }
 
@@ -82,11 +82,6 @@
   .demo h3 { margin: var(--space-2) 0 0; font-size: var(--fs-md); letter-spacing: var(--tracking-snug); }
   .demo p { margin: 0; font-size: var(--fs-sm); color: var(--fg-2); flex: 1; }
   .demo .go { margin-top: var(--space-2); color: var(--brand); font-weight: 600; font-size: var(--fs-sm); }
-
-  @media (max-width: 62rem) {
-    .two { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
-    .facts div, .status li { grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
-  }
 </style>
 </head>
 <body>
@@ -121,21 +116,21 @@
     </div>
 
     <figure class="flow">
-      <div class="node">
+      <div class="smart-panel flush node">
         <div class="cap"><b>Request</b> — what the page asks for, item by item</div>
-<pre><code>{
-  type: <span class="s">"smart-health-checkin-request"</span>, version: <span class="s">"1"</span>, id: <span class="s">"8f2c…"</span>,
-  purpose: <span class="s">"Before your visit with Dr. Reyes"</span>,
-  items: [
-    { id: <span class="id a">"allergies"</span>, title: <span class="s">"Allergies and intolerances"</span>,
-      content: { kind: <span class="s">"selection.fhir"</span>, profiles: [<span class="s">"…/us-core-allergyintolerance"</span>] },
-      accept: [<span class="s">"application/fhir+json"</span>] },
-    { id: <span class="id b">"insurance"</span>, title: <span class="s">"Insurance card"</span>,
-      content: { kind: <span class="s">"selection.fhir"</span>, profiles: [<span class="s">"…/us-core-coverage"</span>] },
-      accept: [<span class="s">"application/smart-health-card"</span>, <span class="s">"application/fhir+json"</span>] },
-    { id: <span class="id c">"phq2"</span>, title: <span class="s">"Two questions about your mood"</span>,
-      content: { kind: <span class="s">"form.fhir"</span>, questionnaireCanonical: <span class="s">"…/phq-2"</span> },
-      accept: [<span class="s">"application/fhir+json"</span>] }
+<pre class="smart-code"><code>{
+  <span class="sj-k">type</span>: <span class="sj-s">"smart-health-checkin-request"</span>, <span class="sj-k">version</span>: <span class="sj-s">"1"</span>, <span class="sj-k">id</span>: <span class="sj-s">"8f2c…"</span>,
+  <span class="sj-k">purpose</span>: <span class="sj-s">"Before your visit with Dr. Reyes"</span>,
+  <span class="sj-k">items</span>: [
+    { <span class="sj-k">id</span>: <span class="id a">"allergies"</span>, <span class="sj-k">title</span>: <span class="sj-s">"Allergies and intolerances"</span>,
+      <span class="sj-k">content</span>: { <span class="sj-k">kind</span>: <span class="sj-s">"selection.fhir"</span>, <span class="sj-k">profiles</span>: [<span class="sj-s">"…/us-core-allergyintolerance"</span>] },
+      <span class="sj-k">accept</span>: [<span class="sj-s">"application/fhir+json"</span>] },
+    { <span class="sj-k">id</span>: <span class="id b">"insurance"</span>, <span class="sj-k">title</span>: <span class="sj-s">"Insurance card"</span>,
+      <span class="sj-k">content</span>: { <span class="sj-k">kind</span>: <span class="sj-s">"selection.fhir"</span>, <span class="sj-k">profiles</span>: [<span class="sj-s">"…/us-core-coverage"</span>] },
+      <span class="sj-k">accept</span>: [<span class="sj-s">"application/smart-health-card"</span>, <span class="sj-s">"application/fhir+json"</span>] },
+    { <span class="sj-k">id</span>: <span class="id c">"phq2"</span>, <span class="sj-k">title</span>: <span class="sj-s">"Two questions about your mood"</span>,
+      <span class="sj-k">content</span>: { <span class="sj-k">kind</span>: <span class="sj-s">"form.fhir"</span>, <span class="sj-k">questionnaireCanonical</span>: <span class="sj-s">"…/phq-2"</span> },
+      <span class="sj-k">accept</span>: [<span class="sj-s">"application/fhir+json"</span>] }
   ]
 }</code></pre>
       </div>
@@ -157,20 +152,20 @@
         signed, encrypted to the page's key, verified
       </div>
 
-      <div class="node">
+      <div class="smart-panel flush node">
         <div class="cap"><b>Response</b> — artifacts, and a status for every item</div>
-<pre><code>{
-  type: <span class="s">"smart-health-checkin-response"</span>, version: <span class="s">"1"</span>, requestId: <span class="s">"8f2c…"</span>,
-  artifacts: [
-    { id: <span class="s">"a1"</span>, fulfills: [<span class="id a">"allergies"</span>], mediaType: <span class="s">"application/fhir+json"</span>, fhirVersion: <span class="s">"4.0.1"</span>,
-      value: { resourceType: <span class="s">"Bundle"</span>, entry: [ …AllergyIntolerance ] } },
-    { id: <span class="s">"a2"</span>, fulfills: [<span class="id b">"insurance"</span>], mediaType: <span class="s">"application/smart-health-card"</span>,
-      value: { verifiableCredential: [<span class="s">"eyJ…"</span>] } }
+<pre class="smart-code"><code>{
+  <span class="sj-k">type</span>: <span class="sj-s">"smart-health-checkin-response"</span>, <span class="sj-k">version</span>: <span class="sj-s">"1"</span>, <span class="sj-k">requestId</span>: <span class="sj-s">"8f2c…"</span>,
+  <span class="sj-k">artifacts</span>: [
+    { <span class="sj-k">id</span>: <span class="sj-s">"a1"</span>, <span class="sj-k">fulfills</span>: [<span class="id a">"allergies"</span>], <span class="sj-k">mediaType</span>: <span class="sj-s">"application/fhir+json"</span>, <span class="sj-k">fhirVersion</span>: <span class="sj-s">"4.0.1"</span>,
+      <span class="sj-k">value</span>: { <span class="sj-k">resourceType</span>: <span class="sj-s">"Bundle"</span>, <span class="sj-k">entry</span>: [ …AllergyIntolerance ] } },
+    { <span class="sj-k">id</span>: <span class="sj-s">"a2"</span>, <span class="sj-k">fulfills</span>: [<span class="id b">"insurance"</span>], <span class="sj-k">mediaType</span>: <span class="sj-s">"application/smart-health-card"</span>,
+      <span class="sj-k">value</span>: { <span class="sj-k">verifiableCredential</span>: [<span class="sj-s">"eyJ…"</span>] } }
   ],
-  requestStatus: [
-    { item: <span class="id a">"allergies"</span>, status: <span class="ok">"fulfilled"</span> },
-    { item: <span class="id b">"insurance"</span>, status: <span class="ok">"fulfilled"</span> },
-    { item: <span class="id c">"phq2"</span>,      status: <span class="no">"declined"</span> }
+  <span class="sj-k">requestStatus</span>: [
+    { <span class="sj-k">item</span>: <span class="id a">"allergies"</span>, <span class="sj-k">status</span>: <span class="ok">"fulfilled"</span> },
+    { <span class="sj-k">item</span>: <span class="id b">"insurance"</span>, <span class="sj-k">status</span>: <span class="ok">"fulfilled"</span> },
+    { <span class="sj-k">item</span>: <span class="id c">"phq2"</span>,      <span class="sj-k">status</span>: <span class="no">"declined"</span> }
   ]
 }</code></pre>
       </div>
