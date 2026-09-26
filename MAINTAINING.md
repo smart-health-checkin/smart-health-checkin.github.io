@@ -77,9 +77,9 @@ so a missed pin shows up before deploy.
 
 1. Tag in android-wallet: `git tag -a vX.Y.Z -m vX.Y.Z && git push origin vX.Y.Z`.
 2. Nothing else to update: every link and connectathon's CI use
-   `releases/latest/download/smart-health-checkin-wallet-debug.apk`. The same
+   `releases/latest/download/smart-health-checkin-wallet.apk`. The same
    release carries the example Verifier app,
-   `releases/latest/download/smart-health-checkin-verifier-app.apk`, signed
+   `releases/latest/download/smart-health-checkin-verifier.apk`, signed
    with the key `/.well-known/assetlinks.json` lists.
 
 ### Spec (`vX.Y.Z`: fixtures and conformance cases)
@@ -530,6 +530,6 @@ needs only the `forms.currentonly` scope, set in the project's
 
 | Where | What | Used for |
 | --- | --- | --- |
-| android-wallet repo secret `ANDROID_DEBUG_KEYSTORE_B64` | The shared debug signing key (certificate SHA-256 `84:64:3E:B6:…:DD:A4`) | Signing every wallet release and `verifier-app`, so releases install over each other and `assetlinks.json` matches. The release fails if the APK has any other signer. |
+| android-wallet repo secret `ANDROID_DEBUG_KEYSTORE_B64` | The shared development signing key (certificate SHA-256 `84:64:3E:B6:…:DD:A4`) | Signing every wallet release and `verifier-app`, so releases install over each other and `assetlinks.json` matches. The release fails if the APK has any other signer. |
 | client repo setting | Immutable releases | Published client releases can't be edited or replaced |
 | `GITHUB_TOKEN` in workflows | Built in | Client's site build reads releases; connectathon's build reads result issues |
