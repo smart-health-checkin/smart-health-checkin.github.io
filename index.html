@@ -38,9 +38,7 @@
   .note { margin: 0 0 var(--space-5); color: var(--fg-2); max-width: 44rem; }
 
   /* --- the three-step diagram (inline SVG, the spec explainers' .xd look) --- */
-  .xd-figure { margin: 0; padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
-  .xd { display: block; width: 100%; height: auto; }
-  .xd text { font-family: var(--font-sans); fill: var(--fg-1); }
+  .xd-figure { margin: 0; padding: var(--space-4); }
   .xd .h { font-size: 15px; font-weight: 700; }
   .xd .t { font-size: 14px; font-weight: 600; }
   .xd .s { font-size: 12.5px; fill: var(--fg-2); }
@@ -61,14 +59,12 @@
   .xd .pill-off { fill: var(--border-subtle); }
   .xd .pill-off-t { fill: var(--fg-3); font-size: 12px; font-weight: 600; }
   .how { margin: 0; }
-  /* The wide diagram on wider screens, the stacked one on phones. */
+  /* The shared .xd-wide/.xd-narrow pair swaps the two at 46rem. */
   .how-narrow { padding: 0; border: 0; background: none; }
   .xd.narrow { max-width: 24rem; }
   .xd.narrow .s { font-size: 13.5px; }
   .xd.narrow .t { font-size: 15px; }
   .xd.narrow .h { font-size: 16px; }
-  .how-wide { display: none; }
-  @media (min-width: 46rem) { .how-wide { display: block; } .how-narrow { display: none; } }
 
   /* --- demos --- */
   .demos { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: var(--space-5); }
@@ -125,7 +121,7 @@
   <div class="page">
     <h2 id="how-h">How it works</h2>
     <figure class="how">
-<div class="xd-figure how-wide">
+<div class="xd-figure xd-wide">
 <svg class="xd wide" viewBox="-1 -1 986 254" role="img" aria-labelledby="hw-title hw-desc">
   <title id="hw-title">How check-in works, in three steps</title>
   <desc id="hw-desc">A clinic's check-in page asks for three things: allergies, an insurance card, and two questions about mood. In their own health app, the patient chooses to share the allergies and the insurance card, and not to answer the mood questions. The page gets back a sealed, verified answer: the allergy list and the insurance card, signed by the insurer, both received; the mood questions marked declined, with nothing sent.</desc>
@@ -181,7 +177,7 @@
   <path class="arrow" d="M648 154 H674"/><path class="ah" d="M672 148 L680 154 L672 160 Z"/>
 </svg>
 </div>
-<div class="xd-figure how-narrow">
+<div class="xd-figure xd-narrow how-narrow">
 <svg class="xd narrow" viewBox="-1 -1 360 892" role="img" aria-labelledby="hn-title hn-desc">
   <title id="hn-title">How check-in works, in three steps</title>
   <desc id="hn-desc">A clinic's check-in page asks for three things: allergies, an insurance card, and two questions about mood. In their own health app, the patient chooses to share the allergies and the insurance card, and not to answer the mood questions. The page gets back a sealed, verified answer: the allergy list and the insurance card, signed by the insurer, both received; the mood questions marked declined, with nothing sent.</desc>
