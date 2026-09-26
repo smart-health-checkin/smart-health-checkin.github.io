@@ -55,13 +55,11 @@
   --smart-blue:   #3DA9DC;
   --smart-purple: #6E4FA2;
 
-  /* Brand accent */
-  --brand:        #0E6FB8;   /* deep SMART blue, AAA on white */
-  --brand-ink:    #094D80;   /* hover / pressed */
-  --brand-bright: #3DA9DC;   /* original logo cyan, fills */
-  --brand-wash:   #D6EAF7;   /* tint background */
+  /* Brand fill: the original logo cyan, for dots, rules, and fills (not text) */
+  --brand-bright: #3DA9DC;
 
-  /* Neutrals */
+  /* Neutrals: fixed primitives, the same in both modes. Page CSS should use
+     the semantic tokens below, which change in dark; the grays don't. */
   --gray-0:   #FFFFFF;
   --gray-50:  #F6F8FA;
   --gray-100: #EEF1F4;
@@ -75,24 +73,11 @@
   --gray-900: #1F2933;
   --gray-950: #11161D;
 
-  /* Semantic surfaces */
-  --bg:           var(--gray-0);
-  --bg-alt:       var(--gray-50);
-  --surface:      var(--gray-0);
-  --surface-alt:  var(--gray-50);
-  --fg-1:         var(--gray-900);
-  --fg-2:         var(--gray-700);
-  --fg-3:         #5B6675;  /* 4.7:1 or better on every surface, incl. brand-wash */
-  --fg-mark:      var(--gray-600);
-  --border:        var(--gray-200);
-  --border-strong: var(--gray-300);
-  --border-subtle: var(--gray-100);
-
-  /* Status */
-  --success:      #1FA88E;  --success-wash: #E5F5F1;
-  --warning:      #F09623;  --warning-wash: #FCEFD9;
-  --danger:       #E5443B;  --danger-wash:  #FBE4E2;
-  --info:         #3DA9DC;  --info-wash:    #E8F4FB;
+  /* Status fills (dots, bars, left rules). Not for text: use --status-*. */
+  --success:      #1FA88E;
+  --warning:      #F09623;
+  --danger:       #E5443B;
+  --info:         #3DA9DC;
 
   /* Type */
   --font-sans:  'Inter', 'Inter Fallback', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -137,13 +122,6 @@
   --radius-xl:  16px;
   --radius-pill: 9999px;
 
-  /* Shadows — neutral, low-alpha */
-  --shadow-xs: 0 1px 1px rgba(17, 22, 29, 0.04);
-  --shadow-sm: 0 1px 2px rgba(17, 22, 29, 0.06), 0 1px 3px rgba(17, 22, 29, 0.04);
-  --shadow-md: 0 2px 4px rgba(17, 22, 29, 0.06), 0 4px 8px rgba(17, 22, 29, 0.06);
-  --shadow-lg: 0 4px 8px rgba(17, 22, 29, 0.06), 0 12px 24px rgba(17, 22, 29, 0.08);
-  --shadow-focus: 0 0 0 3px rgba(14, 111, 184, 0.45);
-
   /* Layout */
   --container-narrow: 760px;
   --container:       1080px;
@@ -155,30 +133,256 @@
   --dur:      200ms;
 }
 
-::selection { background: var(--brand); color: #fff; }
+::selection { background: var(--brand); color: var(--on-brand); }
 
-/* ---------- Chrome colors, light and dark --------------------------
-   The bar, menus, phone panel, breadcrumb, tool bar, and footer take their
-   colors from these tokens and follow the reader's color scheme. Page
-   content keeps its own colors: the chrome maps these onto --surface,
-   --fg-1, etc. only inside its own elements.
-   The chrome is light unless the page says its own content has a dark mode:
-   <html data-theme="auto"> follows the reader's scheme, <html data-theme="dark">
-   forces dark. Without it, a dark bar would sit over a light page. */
+/* ---------- Color: one palette, light and dark ------------------------
+   --theme-* hold the palette's values for the current mode. They are set
+   only here; page CSS never uses or overrides them. Page CSS uses the
+   semantic tokens further down (--bg, --fg-1, --brand, --status-ok, …),
+   which point at them. The chrome's --chrome-* tokens point at the same
+   palette, so a page that redefines, say, --surface for itself can't
+   change the bar.
+
+   Light is the default. Dark applies only when the page says its content
+   has a dark mode: <html data-theme="auto"> follows the reader's
+   prefers-color-scheme, and <html data-theme="dark"> forces dark. Opt in
+   only once the page's own CSS uses the semantic tokens throughout.
+   Every text/background pair below reaches 4.5:1 in both modes. */
 :root {
-  --chrome-bar-bg:       rgba(255, 255, 255, 0.97);
-  --chrome-surface:      #FFFFFF;
-  --chrome-surface-alt:  #F6F8FA;
-  --chrome-fg-1:         #1F2933;
-  --chrome-fg-2:         #4B5563;
-  --chrome-fg-3:         #5B6675;
-  --chrome-border:       #E4E7EB;
-  --chrome-border-strong:#CBD2D9;
-  --chrome-accent:       #0E6FB8;
-  --chrome-accent-ink:   #094D80;
-  --chrome-accent-wash:  #D6EAF7;
-  --chrome-on-accent:    #FFFFFF;
-  --chrome-focus:        #0E6FB8;
+  --theme-bg:            #FFFFFF;
+  --theme-bg-alt:        #F6F8FA;
+  --theme-surface:       #FFFFFF;
+  --theme-surface-alt:   #F6F8FA;
+  --theme-fg-1:          #1F2933;
+  --theme-fg-2:          #4B5563;
+  --theme-fg-3:          #5B6675;  /* 4.7:1 or better on every surface, incl. brand-wash */
+  --theme-fg-mark:       #6F7178;
+  --theme-border:        #E4E7EB;
+  --theme-border-strong: #CBD2D9;
+  --theme-border-subtle: #EEF1F4;
+  --theme-brand:         #0E6FB8;  /* deep SMART blue: links, primary buttons */
+  --theme-brand-ink:     #094D80;  /* hover / pressed; text on --brand-wash */
+  --theme-brand-wash:    #D6EAF7;
+  --theme-on-brand:      #FFFFFF;
+  --theme-focus:         #0E6FB8;
+
+  --theme-ok:            #12705E;  --theme-ok-wash:   #E5F5F1;  --theme-ok-border:   #9BD9CB;
+  --theme-warn:          #7A5A16;  --theme-warn-wash: #FCEFD9;  --theme-warn-border: #E7C88F;
+  --theme-bad:           #A32A22;  --theme-bad-wash:  #FBE4E2;  --theme-bad-border:  #F0B6B1;
+  --theme-info:          #094D80;  --theme-info-wash: #E8F4FB;  --theme-info-border: #A9D6EE;
+
+  --theme-code-bg:        #F6F8FA;
+  --theme-code-fg:        #1F2933;
+  --theme-code-inline-bg: #EEF1F4;
+  --theme-syn-comment:    #5B6675;
+  --theme-syn-keyword:    #0550AE;
+  --theme-syn-string:     #0A6150;
+  --theme-syn-constant:   #953800;
+  --theme-syn-function:   #6639BA;
+  --theme-syn-parameter:  #953800;
+  --theme-syn-punct:      #4B5563;
+  --theme-syn-link:       #0E6FB8;
+
+  --theme-shadow-rgb:    17, 22, 29;
+  --theme-shadow-alpha:  1;
+  --theme-edge:          rgba(17, 22, 29, 0.18);
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+    color-scheme: dark;
+    --theme-bg:            #11161D;
+    --theme-bg-alt:        #171D24;
+    --theme-surface:       #171D24;
+    --theme-surface-alt:   #1D252E;
+    --theme-fg-1:          #E6EAEF;
+    --theme-fg-2:          #B4BDC7;
+    --theme-fg-3:          #9AA6B2;
+    --theme-fg-mark:       #9AA6B2;
+    --theme-border:        #2A333E;
+    --theme-border-strong: #3A4553;
+    --theme-border-subtle: #222A33;
+    --theme-brand:         #7CBBEA;
+    --theme-brand-ink:     #A6D2F2;
+    --theme-brand-wash:    #16324A;
+    --theme-on-brand:      #0E1318;
+    --theme-focus:         #7CBBEA;
+
+    --theme-ok:            #5BCB9F;  --theme-ok-wash:   #12342A;  --theme-ok-border:   #23624B;
+    --theme-warn:          #E8B04F;  --theme-warn-wash: #3A2A10;  --theme-warn-border: #6B4E1C;
+    --theme-bad:           #F28B82;  --theme-bad-wash:  #3D1C1A;  --theme-bad-border:  #74332E;
+    --theme-info:          #7CBBEA;  --theme-info-wash: #16324A;  --theme-info-border: #2A5577;
+
+    --theme-code-bg:        #1D252E;
+    --theme-code-fg:        #E6EAEF;
+    --theme-code-inline-bg: #262F3A;
+    --theme-syn-comment:    #9AA6B2;
+    --theme-syn-keyword:    #79B8FF;
+    --theme-syn-string:     #7DD3B8;
+    --theme-syn-constant:   #FFAB70;
+    --theme-syn-function:   #D2A8FF;
+    --theme-syn-parameter:  #FFAB70;
+    --theme-syn-punct:      #B4BDC7;
+    --theme-syn-link:       #7CBBEA;
+
+    --theme-shadow-rgb:    0, 0, 0;
+    --theme-shadow-alpha:  4;
+    --theme-edge:          rgba(0, 0, 0, 0.55);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --theme-bg:            #11161D;
+  --theme-bg-alt:        #171D24;
+  --theme-surface:       #171D24;
+  --theme-surface-alt:   #1D252E;
+  --theme-fg-1:          #E6EAEF;
+  --theme-fg-2:          #B4BDC7;
+  --theme-fg-3:          #9AA6B2;
+  --theme-fg-mark:       #9AA6B2;
+  --theme-border:        #2A333E;
+  --theme-border-strong: #3A4553;
+  --theme-border-subtle: #222A33;
+  --theme-brand:         #7CBBEA;
+  --theme-brand-ink:     #A6D2F2;
+  --theme-brand-wash:    #16324A;
+  --theme-on-brand:      #0E1318;
+  --theme-focus:         #7CBBEA;
+
+  --theme-ok:            #5BCB9F;  --theme-ok-wash:   #12342A;  --theme-ok-border:   #23624B;
+  --theme-warn:          #E8B04F;  --theme-warn-wash: #3A2A10;  --theme-warn-border: #6B4E1C;
+  --theme-bad:           #F28B82;  --theme-bad-wash:  #3D1C1A;  --theme-bad-border:  #74332E;
+  --theme-info:          #7CBBEA;  --theme-info-wash: #16324A;  --theme-info-border: #2A5577;
+
+  --theme-code-bg:        #1D252E;
+  --theme-code-fg:        #E6EAEF;
+  --theme-code-inline-bg: #262F3A;
+  --theme-syn-comment:    #9AA6B2;
+  --theme-syn-keyword:    #79B8FF;
+  --theme-syn-string:     #7DD3B8;
+  --theme-syn-constant:   #FFAB70;
+  --theme-syn-function:   #D2A8FF;
+  --theme-syn-parameter:  #FFAB70;
+  --theme-syn-punct:      #B4BDC7;
+  --theme-syn-link:       #7CBBEA;
+
+  --theme-shadow-rgb:    0, 0, 0;
+  --theme-shadow-alpha:  4;
+  --theme-edge:          rgba(0, 0, 0, 0.55);
+}
+
+/* The semantic tokens: what page CSS uses. */
+:root {
+  /* Surfaces */
+  --bg:            var(--theme-bg);           /* the page */
+  --bg-alt:        var(--theme-bg-alt);       /* a band or well set into the page */
+  --surface:       var(--theme-surface);      /* cards, panels, menus */
+  --surface-alt:   var(--theme-surface-alt);  /* a panel's header, hover rows, quiet panels */
+
+  /* Text */
+  --fg-1:          var(--theme-fg-1);         /* body text, headings */
+  --fg-2:          var(--theme-fg-2);         /* secondary text */
+  --fg-3:          var(--theme-fg-3);         /* captions, labels, meta */
+  --fg-mark:       var(--theme-fg-mark);      /* table header labels (legacy) */
+
+  /* Lines */
+  --border:        var(--theme-border);
+  --border-strong: var(--theme-border-strong); /* control outlines */
+  --border-subtle: var(--theme-border-subtle); /* row rules inside a panel */
+
+  /* Accent */
+  --brand:         var(--theme-brand);        /* links, primary buttons, selection */
+  --brand-ink:     var(--theme-brand-ink);    /* hover/pressed; text on --brand-wash */
+  --brand-wash:    var(--theme-brand-wash);   /* selected rows, current menu item */
+  --on-brand:      var(--theme-on-brand);     /* text on a --brand fill */
+  --focus:         var(--theme-focus);        /* focus rings */
+
+  /* Status: text/icon color, background wash, border. Text in the status
+     color reaches 4.5:1 on its wash and on every surface. */
+  --status-ok:          var(--theme-ok);
+  --status-ok-wash:     var(--theme-ok-wash);
+  --status-ok-border:   var(--theme-ok-border);
+  --status-warn:        var(--theme-warn);
+  --status-warn-wash:   var(--theme-warn-wash);
+  --status-warn-border: var(--theme-warn-border);
+  --status-bad:         var(--theme-bad);
+  --status-bad-wash:    var(--theme-bad-wash);
+  --status-bad-border:  var(--theme-bad-border);
+  --status-info:        var(--theme-info);
+  --status-info-wash:   var(--theme-info-wash);
+  --status-info-border: var(--theme-info-border);
+  /* Older names for the washes; they follow the mode too. */
+  --success-wash:  var(--status-ok-wash);
+  --warning-wash:  var(--status-warn-wash);
+  --danger-wash:   var(--status-bad-wash);
+  --info-wash:     var(--status-info-wash);
+
+  /* Code */
+  --code-bg:        var(--theme-code-bg);
+  --code-fg:        var(--theme-code-fg);
+  --code-border:    var(--theme-border);
+  --code-inline-bg: var(--theme-code-inline-bg);
+  --code-inline-fg: var(--theme-code-fg);
+
+  /* Syntax highlighting (Shiki's css-variables theme and smart-json.js) */
+  --syn-comment:   var(--theme-syn-comment);
+  --syn-keyword:   var(--theme-syn-keyword);    /* keywords; JSON keys */
+  --syn-string:    var(--theme-syn-string);     /* strings; HTML tag names */
+  --syn-constant:  var(--theme-syn-constant);   /* numbers, true/false/null, this */
+  --syn-function:  var(--theme-syn-function);   /* function and type names; HTML attributes */
+  --syn-parameter: var(--theme-syn-parameter);
+  --syn-punct:     var(--theme-syn-punct);      /* , : ; */
+  --syn-link:      var(--theme-syn-link);
+  --syn-inserted:  var(--theme-ok);
+  --syn-deleted:   var(--theme-bad);
+  --syn-changed:   var(--theme-warn);
+
+  /* Shadows: neutral, low-alpha; stronger in dark */
+  --shadow-xs: 0 1px 1px rgba(var(--theme-shadow-rgb), calc(0.04 * var(--theme-shadow-alpha)));
+  --shadow-sm: 0 1px 2px rgba(var(--theme-shadow-rgb), calc(0.06 * var(--theme-shadow-alpha))), 0 1px 3px rgba(var(--theme-shadow-rgb), calc(0.04 * var(--theme-shadow-alpha)));
+  --shadow-md: 0 2px 4px rgba(var(--theme-shadow-rgb), calc(0.06 * var(--theme-shadow-alpha))), 0 4px 8px rgba(var(--theme-shadow-rgb), calc(0.06 * var(--theme-shadow-alpha)));
+  --shadow-lg: 0 4px 8px rgba(var(--theme-shadow-rgb), calc(0.06 * var(--theme-shadow-alpha))), 0 12px 24px rgba(var(--theme-shadow-rgb), calc(0.08 * var(--theme-shadow-alpha)));
+  --shadow-focus: 0 0 0 3px color-mix(in srgb, var(--theme-focus) 45%, transparent);
+  --shadow-edge: var(--theme-edge);           /* scroll-edge shadows on wide tables */
+
+  /* Shiki's css-variables theme (build-time highlighting) reads these. */
+  --shiki-foreground: var(--code-fg);
+  --shiki-background: var(--code-bg);
+  --shiki-token-comment: var(--syn-comment);
+  --shiki-token-keyword: var(--syn-keyword);
+  --shiki-token-string: var(--syn-string);
+  --shiki-token-string-expression: var(--syn-string);
+  --shiki-token-constant: var(--syn-constant);
+  --shiki-token-function: var(--syn-function);
+  --shiki-token-parameter: var(--syn-parameter);
+  --shiki-token-punctuation: var(--syn-punct);
+  --shiki-token-link: var(--syn-link);
+  --shiki-token-inserted: var(--syn-inserted);
+  --shiki-token-deleted: var(--syn-deleted);
+  --shiki-token-changed: var(--syn-changed);
+}
+/* A page that opts in gets its canvas and default text from the tokens
+   (zero specificity, so the page's own body rule wins). */
+:where(:root[data-theme]) :where(body) { background: var(--bg); color: var(--fg-1); }
+
+/* ---------- Chrome colors -------------------------------------------
+   The bar, menus, phone panel, breadcrumb, tool bar, and footer use these.
+   They come from the same palette, so they are light unless the page opts
+   in to dark (above). Inside the chrome they stand in for the page tokens,
+   so page CSS that redefines --surface or --brand can't reshape the bar. */
+:root {
+  --chrome-bar-bg:       color-mix(in srgb, var(--theme-surface) 97%, transparent);
+  --chrome-surface:      var(--theme-surface);
+  --chrome-surface-alt:  var(--theme-surface-alt);
+  --chrome-fg-1:         var(--theme-fg-1);
+  --chrome-fg-2:         var(--theme-fg-2);
+  --chrome-fg-3:         var(--theme-fg-3);
+  --chrome-border:       var(--theme-border);
+  --chrome-border-strong:var(--theme-border-strong);
+  --chrome-accent:       var(--theme-brand);
+  --chrome-accent-ink:   var(--theme-brand-ink);
+  --chrome-accent-wash:  var(--theme-brand-wash);
+  --chrome-on-accent:    var(--theme-on-brand);
+  --chrome-focus:        var(--theme-focus);
   --chrome-shadow:       0 2px 4px rgba(17, 22, 29, 0.06), 0 4px 8px rgba(17, 22, 29, 0.06);
   /* The logo's purple petal (#722772) is lifted in dark to #A04CA0, 3.3:1
      on the dark bar (the original is 1.8:1); the other petals are unchanged. */
@@ -188,43 +392,17 @@
 }
 @media (prefers-color-scheme: dark) {
   :root[data-theme="auto"] {
-    --chrome-bar-bg:       rgba(23, 29, 36, 0.97);
-    --chrome-surface:      #171D24;
-    --chrome-surface-alt:  #1D252E;
-    --chrome-fg-1:         #E6EAEF;
-    --chrome-fg-2:         #B4BDC7;
-    --chrome-fg-3:         #9AA6B2;
-    --chrome-border:       #2A333E;
-    --chrome-border-strong:#3A4553;
-    --chrome-accent:       #7CBBEA;
-    --chrome-accent-ink:   #A6D2F2;
-    --chrome-accent-wash:  #16324A;
-    --chrome-on-accent:    #0E1318;
-    --chrome-focus:        #7CBBEA;
     --chrome-shadow:       0 2px 4px rgba(0, 0, 0, 0.3), 0 8px 16px rgba(0, 0, 0, 0.35);
     --smart-logo-purple:   #A04CA0;
     --chrome-scheme:       dark;
-    --chrome-crumb-bg:     #11161D;
+    --chrome-crumb-bg:     var(--theme-bg);
   }
 }
 :root[data-theme="dark"] {
-  --chrome-bar-bg:       rgba(23, 29, 36, 0.97);
-  --chrome-surface:      #171D24;
-  --chrome-surface-alt:  #1D252E;
-  --chrome-fg-1:         #E6EAEF;
-  --chrome-fg-2:         #B4BDC7;
-  --chrome-fg-3:         #9AA6B2;
-  --chrome-border:       #2A333E;
-  --chrome-border-strong:#3A4553;
-  --chrome-accent:       #7CBBEA;
-  --chrome-accent-ink:   #A6D2F2;
-  --chrome-accent-wash:  #16324A;
-  --chrome-on-accent:    #0E1318;
-  --chrome-focus:        #7CBBEA;
   --chrome-shadow:       0 2px 4px rgba(0, 0, 0, 0.3), 0 8px 16px rgba(0, 0, 0, 0.35);
   --smart-logo-purple:   #A04CA0;
   --chrome-scheme:       dark;
-  --chrome-crumb-bg:     #11161D;
+  --chrome-crumb-bg:     var(--theme-bg);
 }
 /* Inside the chrome, the page tokens become the chrome's. */
 .smart-skip,
@@ -246,6 +424,8 @@
   --brand:         var(--chrome-accent);
   --brand-ink:     var(--chrome-accent-ink);
   --brand-wash:    var(--chrome-accent-wash);
+  --on-brand:      var(--chrome-on-accent);
+  --focus:         var(--chrome-focus);
   --shadow-md:     var(--chrome-shadow);
   --shadow-focus:  0 0 0 3px var(--chrome-focus);
   color-scheme: var(--chrome-scheme);
@@ -834,12 +1014,17 @@ html.smart-menu-open, html.smart-menu-open body { overflow: hidden; }
 .smart-btn[disabled], .smart-btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
 .smart-btn[disabled]:hover { border-color: var(--border-strong); color: var(--fg-1); }
 
-.smart-btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
-.smart-btn.primary:hover { background: var(--brand-ink); border-color: var(--brand-ink); color: #fff; }
-.smart-btn.primary[disabled]:hover { background: var(--brand); border-color: var(--brand); color: #fff; }
+.smart-btn.primary { background: var(--brand); border-color: var(--brand); color: var(--on-brand); }
+.smart-btn.primary:hover { background: var(--brand-ink); border-color: var(--brand-ink); color: var(--on-brand); }
+.smart-btn.primary[disabled]:hover { background: var(--brand); border-color: var(--brand); color: var(--on-brand); }
 
 .smart-btn.ghost { border-color: transparent; background: transparent; color: var(--fg-2); }
-.smart-btn.ghost:hover { border-color: var(--border); color: var(--brand); background: var(--gray-50); }
+.smart-btn.ghost:hover { border-color: var(--border); color: var(--brand); background: var(--surface-alt); }
+
+/* A button that looks like a link, for secondary actions in running text. */
+.smart-btn.link { border-color: transparent; background: transparent; padding-left: 2px; padding-right: 2px; color: var(--brand); text-decoration: underline; text-underline-offset: 2px; }
+.smart-btn.link:hover { border-color: transparent; color: var(--brand-ink); }
+.smart-btn.block { display: flex; width: 100%; justify-content: center; }
 
 .smart-btn.sm { font-size: var(--fs-xs); padding: 6px 10px; border-radius: var(--radius-sm); font-weight: 500; }
 .smart-btn.mono { font-family: var(--font-mono); font-weight: 400; }
@@ -868,10 +1053,10 @@ html.smart-menu-open, html.smart-menu-open body { overflow: hidden; }
   border: 1px solid var(--border); color: var(--fg-3); background: var(--surface);
   white-space: nowrap;
 }
-.smart-chip.warning { border-color: #E7C88F; color: #7A5A16; background: var(--warning-wash); }
-.smart-chip.success { border-color: #9BD9CB; color: #12705E; background: var(--success-wash); }
-.smart-chip.info    { border-color: #A9D6EE; color: var(--brand-ink); background: var(--info-wash); }
-.smart-chip.danger  { border-color: #F0B6B1; color: #A32A22; background: var(--danger-wash); }
+.smart-chip.ok,   .smart-chip.success { border-color: var(--status-ok-border);   color: var(--status-ok);   background: var(--status-ok-wash); }
+.smart-chip.warn, .smart-chip.warning { border-color: var(--status-warn-border); color: var(--status-warn); background: var(--status-warn-wash); }
+.smart-chip.bad,  .smart-chip.danger  { border-color: var(--status-bad-border);  color: var(--status-bad);  background: var(--status-bad-wash); }
+.smart-chip.info                      { border-color: var(--status-info-border); color: var(--status-info); background: var(--status-info-wash); }
 
 /* --- a full-bleed contextual band (e.g. "this is a demo") --- */
 .smart-banner {
@@ -889,8 +1074,9 @@ html.smart-menu-open, html.smart-menu-open body { overflow: hidden; }
   padding: var(--space-1) var(--space-4);
   color: var(--fg-2); font-size: var(--fs-sm);
 }
-.smart-note.warning { border-left-color: var(--warning); }
-.smart-note.danger  { border-left-color: var(--danger); }
+.smart-note.warn, .smart-note.warning { border-left-color: var(--warning); }
+.smart-note.bad,  .smart-note.danger  { border-left-color: var(--danger); }
+.smart-note.ok,   .smart-note.success { border-left-color: var(--success); }
 
 /* --- form controls --- */
 .smart-field { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
@@ -909,3 +1095,278 @@ html.smart-menu-open, html.smart-menu-open body { overflow: hidden; }
 
 /* Long identifiers and URLs in inline code wrap instead of widening the page. */
 :not(pre) > code { overflow-wrap: anywhere; }
+
+/* ---------------------------------------------------------------------
+   Content components. Every color comes from the semantic tokens, so each
+   works in light and dark. Status modifiers are ok, warn, bad, and info
+   (the older success, warning, and danger also work).
+   --------------------------------------------------------------------- */
+
+/* --- callout: a boxed note with a colored left rule --- */
+.smart-callout {
+  --_rule: var(--brand); --_wash: var(--status-info-wash);
+  margin: var(--space-4) 0;
+  padding: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--_rule);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  background: var(--_wash);
+  color: var(--fg-1);
+}
+.smart-callout.ok,   .smart-callout.success { --_rule: var(--success); --_wash: var(--status-ok-wash); }
+.smart-callout.warn, .smart-callout.warning { --_rule: var(--warning); --_wash: var(--status-warn-wash); }
+.smart-callout.bad,  .smart-callout.danger  { --_rule: var(--danger);  --_wash: var(--status-bad-wash); }
+.smart-callout > :first-child { margin-top: 0; }
+.smart-callout > :last-child { margin-bottom: 0; }
+.smart-callout-title { display: block; margin-bottom: var(--space-1); font-weight: 700; }
+
+/* --- table, and a wrapper that scrolls it sideways with edge shadows --- */
+.smart-table-wrap {
+  --_edge-bg: var(--table-bg, var(--bg));
+  margin: var(--space-4) 0;
+  overflow-x: auto;
+  background:
+    linear-gradient(to right, var(--_edge-bg) 30%, transparent) left center / 40px 100% no-repeat local,
+    linear-gradient(to left, var(--_edge-bg) 30%, transparent) right center / 40px 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, var(--shadow-edge), transparent) left center / 14px 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, var(--shadow-edge), transparent) right center / 14px 100% no-repeat scroll;
+}
+/* On a card, the covers must match the card. */
+:is(.smart-panel, .smart-details) .smart-table-wrap { --table-bg: var(--surface); }
+.smart-table-wrap > table { margin: 0; }
+.smart-table,
+.smart-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+.smart-table :is(th, td),
+.smart-prose table :is(th, td) {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+.smart-table thead th,
+.smart-prose table thead th {
+  border-bottom-color: var(--border-strong);
+  color: var(--fg-3);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.smart-table td.num, .smart-table th.num { text-align: right; }
+
+/* --- code: blocks and inline --- */
+.smart-code,
+pre.shiki.css-variables,
+.smart-prose pre {
+  margin: var(--space-4) 0;
+  padding: 12px 16px;
+  overflow: auto;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  border: 1px solid var(--code-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.55;
+  tab-size: 2;
+}
+.smart-code code,
+pre.shiki.css-variables code,
+.smart-prose pre code {
+  padding: 0; border: 0; background: none; color: inherit;
+  font: inherit;
+}
+.smart-code:focus-visible,
+pre.shiki.css-variables:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.smart-code.tall { max-height: 32rem; }
+.smart-code.short { max-height: 20rem; }
+.smart-inline-code,
+.smart-prose :not(pre) > code {
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  background: var(--code-inline-bg);
+  color: var(--code-inline-fg);
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+}
+
+/* JSON highlighted at runtime by /assets/smart-json.js. JSON keys take the
+   keyword color, as they do in Shiki's css-variables theme. */
+.sj-k { color: var(--syn-keyword); }
+.sj-s { color: var(--syn-string); }
+.sj-n, .sj-l { color: var(--syn-constant); }
+.sj-p { color: var(--syn-punct); }
+
+/* --- pill: a short status label (sans; .smart-chip is the mono label) --- */
+.smart-pill {
+  --_fg: var(--fg-2); --_bg: var(--surface-alt); --_line: var(--border);
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  padding: 2px 8px;
+  border: 1px solid var(--_line);
+  border-radius: var(--radius-pill);
+  background: var(--_bg);
+  color: var(--_fg);
+  font-size: var(--fs-xs); font-weight: 600; line-height: 1.5;
+  white-space: nowrap;
+}
+.smart-pill.ok,   .smart-pill.success { --_fg: var(--status-ok);   --_bg: var(--status-ok-wash);   --_line: var(--status-ok-border); }
+.smart-pill.warn, .smart-pill.warning { --_fg: var(--status-warn); --_bg: var(--status-warn-wash); --_line: var(--status-warn-border); }
+.smart-pill.bad,  .smart-pill.danger  { --_fg: var(--status-bad);  --_bg: var(--status-bad-wash);  --_line: var(--status-bad-border); }
+.smart-pill.info                      { --_fg: var(--status-info); --_bg: var(--status-info-wash); --_line: var(--status-info-border); }
+
+/* --- field list: <dl class="smart-fields"> of name/value rows --- */
+.smart-fields {
+  display: grid;
+  grid-template-columns: fit-content(16rem) minmax(0, 1fr);
+  column-gap: var(--space-5);
+  margin: var(--space-4) 0;
+}
+.smart-fields > div { display: contents; }
+.smart-fields dt,
+.smart-fields dd {
+  margin: 0;
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--border-subtle);
+}
+.smart-fields dt { color: var(--fg-2); font-weight: 600; font-size: var(--fs-sm); }
+.smart-fields dd { min-width: 0; color: var(--fg-1); overflow-wrap: anywhere; }
+@media (max-width: 46rem) {
+  .smart-fields { grid-template-columns: minmax(0, 1fr); }
+  .smart-fields dd { border-top: 0; padding-top: 0; }
+}
+
+/* --- tabs: a segmented row of buttons (role="tab" + aria-selected, or
+   aria-pressed, or links with aria-current). Behavior is the page's. --- */
+.smart-tabs {
+  display: inline-flex;
+  max-width: 100%;
+  gap: 2px;
+  padding: 3px;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-alt);
+}
+.smart-tabs > :is(button, a) {
+  display: inline-flex; align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: calc(var(--radius-md) - 2px);
+  background: transparent;
+  color: var(--fg-2);
+  font: inherit; font-size: var(--fs-sm); font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+}
+.smart-tabs > :is(button, a):hover { color: var(--fg-1); }
+.smart-tabs > :is([aria-selected="true"], [aria-pressed="true"], [aria-current]) {
+  background: var(--surface);
+  color: var(--brand-ink);
+  box-shadow: inset 0 0 0 1px var(--border), var(--shadow-xs);
+}
+.smart-tabs > :is(button, a):focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+
+/* --- details: a bordered disclosure with a turning caret --- */
+.smart-details,
+.smart-prose details {
+  margin: var(--space-3) 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.smart-details > summary,
+.smart-prose details > summary {
+  display: flex; align-items: baseline; gap: var(--space-2);
+  padding: 10px 14px;
+  list-style: none;
+  color: var(--fg-1);
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: inherit;
+}
+.smart-details > summary::-webkit-details-marker,
+.smart-prose details > summary::-webkit-details-marker { display: none; }
+.smart-details > summary::before,
+.smart-prose details > summary::before {
+  content: "▸";
+  flex: none;
+  color: var(--fg-3);
+  transition: transform var(--dur) var(--ease-out);
+}
+.smart-details[open] > summary::before,
+.smart-prose details[open] > summary::before { transform: rotate(90deg); }
+.smart-details[open] > summary,
+.smart-prose details[open] > summary { border-bottom: 1px solid var(--border); border-radius: var(--radius-md) var(--radius-md) 0 0; }
+.smart-details > summary:focus-visible,
+.smart-prose details > summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.smart-details > :not(summary),
+.smart-prose details > :not(summary) { margin: var(--space-3) 14px; }
+@media (prefers-reduced-motion: reduce) {
+  .smart-details > summary::before, .smart-prose details > summary::before { transition: none; }
+}
+
+/* --- markdown blockquotes in a .smart-prose scope read as info callouts --- */
+.smart-prose blockquote {
+  margin: var(--space-4) 0;
+  padding: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--brand);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  background: var(--status-info-wash);
+  color: var(--fg-1);
+}
+.smart-prose blockquote > :first-child { margin-top: 0; }
+.smart-prose blockquote > :last-child { margin-bottom: 0; }
+
+/* --- copy button: site-chrome.js adds one to every <pre>, unless the pre
+   or an ancestor has data-no-copy. The slot is a zero-height sticky strip
+   at the top of the pre, so the button stays in the corner while the code
+   scrolls sideways, and the pre's text is unchanged. --- */
+.smart-copy-slot {
+  display: block;
+  position: sticky;
+  left: 0;  /* sticks to the scroller's content edge, where it starts */
+  z-index: 1;
+  height: 0;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.smart-copy {
+  position: absolute;
+  top: calc(6px - var(--_pt, 0px));
+  right: calc(6px - var(--_pr, 0px));
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--fg-2);
+  cursor: pointer;
+  pointer-events: auto;
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease-out);
+}
+.smart-copy svg { display: block; width: 16px; height: 16px; }
+.smart-copy .smart-copy-done { display: none; }
+.smart-copy[data-copied] .smart-copy-idle { display: none; }
+.smart-copy[data-copied] .smart-copy-done { display: block; }
+.smart-copy[data-copied] { color: var(--status-ok); border-color: var(--status-ok-border); }
+.smart-copy:hover { color: var(--brand); border-color: var(--border-strong); }
+.smart-copy:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+pre:hover > .smart-copy-slot > .smart-copy,
+pre:focus-within > .smart-copy-slot > .smart-copy,
+.smart-copy[data-copied] { opacity: 1; }
+@media (hover: none) { .smart-copy { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .smart-copy { transition: none; } }
+.smart-sr {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}

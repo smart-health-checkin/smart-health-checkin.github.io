@@ -106,7 +106,10 @@ Not versioned. Push to `main` and they deploy.
 
 - **Look:** every page loads `/assets/site-chrome.js` and
   `/assets/smart-design.css` from the apex at runtime. A change there shows
-  everywhere at once.
+  everywhere at once. The stylesheet holds the colors for light and dark
+  ([Colors and dark mode](#colors-and-dark-mode)) and the shared
+  [components](#components); tools that show JSON load
+  [`/assets/smart-json.js`](#json-at-runtime).
 - **Menus:** each section publishes `nav.json` (`/spec/nav.json`,
   `/client/nav.json`, `/client/demo/nav.json`, `/connectathon/nav.json`), with
   hrefs relative to the file. An entry with its own `items` (and a `title`,
@@ -164,16 +167,14 @@ Not versioned. Push to `main` and they deploy.
   back to local fonts sized to match Inter at each weight, so the swap doesn't reflow text.
   The two `preconnect` lines let the fonts start sooner. Widths set in `ch`
   still change a little when Inter arrives; prefer `rem` for layout widths.
-- **Dark mode:** the bar, menus, phone panel, breadcrumb, tool bar, and
-  footer are light unless the page's own content has a dark mode. Such a
-  page opts in with `<html data-theme="auto">` (follow the reader's
-  `prefers-color-scheme`) or forces `data-theme="dark"`; without either, a
-  dark bar would sit over a light page. Their colors are the `--chrome-*`
-  tokens in `smart-design.css`; inside the chrome they stand in for
-  `--surface`, `--fg-1`, `--brand` and the rest, so page content keeps its
-  own colors. Today the Testing EHR and the client's demo wallet opt in. In
-  dark the logo's purple petal is `#A04CA0` (`--smart-logo-purple`) instead of
-  `#722772`, which is too dark on the dark bar.
+- **Dark mode:** a page is light unless it opts in with `<html
+  data-theme="auto">` (follow the reader's `prefers-color-scheme`) or
+  `data-theme="dark"` (always dark). The chrome follows the same switch, so
+  a dark bar never sits over a light page. Opt in only once the page's own
+  CSS takes every color from the tokens; see [Colors and dark
+  mode](#colors-and-dark-mode). In dark the logo's purple petal is `#A04CA0`
+  (`--smart-logo-purple`) instead of `#722772`, which is too dark on the dark
+  bar.
 
 ### The bar
 
@@ -266,6 +267,209 @@ it stays put while scrolling.
 `<div data-smart-footer></div>`: one column per section (Overview, then its
 first five other menu links, groups flattened) and a Project column (Home,
 GitHub).
+
+### Colors and dark mode
+
+`smart-design.css` holds one palette for the whole domain, with a light and
+a dark value for every color. Page CSS uses the semantic tokens below; each
+has the right value for the current mode, so a page written with them works
+in both.
+
+| Token | Use |
+| --- | --- |
+| `--bg` | The page |
+| `--bg-alt` | A band or well set into the page |
+| `--surface` | Cards, panels, menus, details |
+| `--surface-alt` | A panel's header, hover rows, quiet panels |
+| `--fg-1`, `--fg-2`, `--fg-3` | Body text and headings; secondary text; captions, labels, meta |
+| `--border`, `--border-strong`, `--border-subtle` | Lines; control outlines; row rules inside a panel |
+| `--brand` | Links, primary buttons, selection |
+| `--brand-ink` | Hover and pressed; text on `--brand-wash` |
+| `--brand-wash` | Selected rows, the current item |
+| `--on-brand` | Text on a `--brand` fill |
+| `--focus` | Focus rings (`--shadow-focus` is the ring as a box shadow) |
+| `--status-ok`, `--status-warn`, `--status-bad`, `--status-info` | Status text and icons |
+| `--status-*-wash`, `--status-*-border` | Status backgrounds and borders |
+| `--code-bg`, `--code-fg`, `--code-border` | Code blocks |
+| `--code-inline-bg`, `--code-inline-fg` | Inline code |
+| `--syn-comment`, `--syn-keyword`, `--syn-string`, `--syn-constant`, `--syn-function`, `--syn-parameter`, `--syn-punct`, `--syn-link` | Syntax colors ([Syntax highlighting](#syntax-highlighting)) |
+| `--shadow-xs` … `--shadow-lg`, `--shadow-edge` | Shadows; the scroll-edge shadow on wide tables |
+
+- **Contrast:** every text token reaches 4.5:1 on every background token in
+  both modes, and each status color on its own wash. Put text on
+  `--brand-wash` in `--brand-ink`, not `--brand`.
+- **Older names still work:** `--success-wash`, `--warning-wash`,
+  `--danger-wash`, and `--info-wash` are the status washes and change in
+  dark. `--success`, `--warning`, `--danger`, `--info`, `--brand-bright`,
+  and the spectrum colors (`--smart-red` …) are fills for dots, rules, and
+  bars, the same in both modes; don't use them for text.
+- **Grays don't change:** `--gray-0` … `--gray-950` are fixed primitives. A
+  page that takes a color from a gray stays light in dark mode.
+- **`--theme-*` is the palette itself.** The semantic tokens and the chrome
+  point at it. Don't use or override it. A page may redefine a semantic
+  token for itself (the chrome ignores that), but then that page has to
+  give it a dark value too.
+- **Opting in:** add `data-theme="auto"` to `<html>` only when the page's CSS
+  has no color literals left for text, backgrounds, or borders. Then the
+  page's canvas and default text come from `--bg` and `--fg-1`, native
+  controls and scrollbars turn dark (`color-scheme`), and the chrome turns
+  dark with it. Exceptions that must stay as they are in both modes, such
+  as a QR code's white field or logo colors, keep their literals.
+- **Checking a page:** load it with the reader's scheme set to dark (Chrome
+  DevTools, Rendering, "Emulate CSS media feature prefers-color-scheme"),
+  or temporarily set `data-theme="dark"` on its `<html>`.
+  [`/assets/components.html`](https://smart-health-checkin.org/assets/components.html)
+  shows every token and component; add `?theme=light`, `?theme=dark`, or
+  `?theme=auto` to switch.
+
+### Components
+
+Shared classes for the pieces that recur across sections. All are
+token-driven, so they work in both modes. Status modifiers are `ok`, `warn`,
+`bad`, and `info` (`success`, `warning`, and `danger` also work).
+
+| Class | What it is |
+| --- | --- |
+| `.smart-btn` (`.primary`, `.ghost`, `.link`, `.sm`, `.mono`, `.block`) | Buttons |
+| `.smart-pill` + status | A short status label: "fulfilled", "declined" |
+| `.smart-chip` + status | A mono, uppercase label: "Online", "Draft" |
+| `.smart-callout` + status | A boxed note with a colored left rule; info by default. `.smart-callout-title` for a bold first line |
+| `.smart-note` (`.warn`, `.bad`, `.ok`) | A left rule and nothing else |
+| `.smart-table-wrap` > `table.smart-table` | A table that scrolls sideways inside its wrapper, with edge shadows when it overflows. On a card, set `--table-bg: var(--surface)` on the wrapper (automatic inside `.smart-panel` and `.smart-details`). `td.num` aligns right |
+| `pre.smart-code` (`.short`, `.tall` cap the height) | A code block |
+| `code.smart-inline-code` | Inline code |
+| `dl.smart-fields` | Name/value rows; `dt`/`dd` pairs, optionally each pair in a `div`. One column below 46rem |
+| `.smart-tabs` | A segmented row of buttons or links; the selected one has `aria-selected="true"`, `aria-pressed="true"`, or `aria-current`. The page supplies the behavior |
+| `details.smart-details` | A bordered disclosure with a turning caret |
+| `.smart-panel` (`.quiet`, `.flush`, `.dashed`), `.smart-panel-head` | Cards |
+| `.smart-field`, `.smart-input`, `.smart-select` | Form fields |
+| `.smart-banner` | A full-width band, such as "this is a demo" |
+| `.smart-prose` | A scope for rendered Markdown: inside it, bare `pre`, inline `code`, `table`, `blockquote` (an info callout), and `details` get the looks above without classes. Wrap tables in `.smart-table-wrap` when rendering |
+
+```html
+<div class="smart-callout warn">
+  <span class="smart-callout-title">Draft</span>
+  This section will change before the connectathon.
+</div>
+
+<div class="smart-table-wrap">
+  <table class="smart-table">
+    <thead><tr><th>Item</th><th>Status</th><th class="num">Bytes</th></tr></thead>
+    <tbody><tr><td>allergies</td><td><span class="smart-pill ok">fulfilled</span></td><td class="num">18,422</td></tr></tbody>
+  </table>
+</div>
+
+<dl class="smart-fields">
+  <dt>type</dt><dd><code class="smart-inline-code">smart-health-checkin-request</code></dd>
+  <dt>purpose</dt><dd>Before your visit</dd>
+</dl>
+
+<div class="smart-tabs" role="tablist" aria-label="View">
+  <button role="tab" aria-selected="true">Readable</button>
+  <button role="tab" aria-selected="false">JSON</button>
+</div>
+
+<details class="smart-details">
+  <summary>Response</summary>
+  <pre class="smart-code">…</pre>
+</details>
+```
+
+### Syntax highlighting
+
+One look everywhere: static pages highlight at build time with Shiki, and
+tools that show JSON while running use [`smart-json.js`](#json-at-runtime).
+Both color from the `--syn-*` tokens, so code reads the same in every
+section and follows dark mode. Static pages load no highlighter at runtime.
+
+Build time, in each repo's page build (Shiki 1.0 or later; the client is on
+4.x):
+
+```ts
+import { createHighlighter, createCssVariablesTheme } from "shiki";
+
+const theme = createCssVariablesTheme();   // default name "css-variables", prefix "--shiki-"
+const highlighter = await createHighlighter({
+  themes: [theme],
+  langs: ["ts", "tsx", "js", "json", "html", "xml", "sh", "kotlin", cddl],
+});
+
+const html = highlighter.codeToHtml(code, { lang, theme: "css-variables" });
+```
+
+- Keep the theme's defaults: `smart-design.css` defines the `--shiki-*`
+  variables it emits and maps them onto the `--syn-*` tokens, and it styles
+  `pre.shiki.css-variables` as a code block (the same look as
+  `pre.smart-code`). Don't add colors or a background for it in page CSS.
+- Aliases: `typescript` → `ts`, `javascript` → `js`, `bash` and `shell` →
+  `sh`, `jsonc` → `json`. Anything unknown, and `text`, render as plain
+  code (`lang: "text"`).
+- Shiki has no CDDL grammar. Pass this one in `langs` (above as `cddl`):
+
+```ts
+const cddl = {
+  name: "cddl", scopeName: "source.cddl",
+  patterns: [
+    { match: ";.*$", name: "comment.line.semicolon.cddl" },
+    { match: "\"(?:[^\"\\\\]|\\\\.)*\"", name: "string.quoted.double.cddl" },
+    { match: "'(?:[^'\\\\]|\\\\.)*'", name: "string.quoted.single.cddl" },
+    { match: "\\.[a-z][a-z0-9-]*\\b", name: "keyword.operator.control.cddl" },
+    { match: "\\b(?:bool|true|false|nil|null|undefined|any|u?int|nint|float(?:16|32|64)?|tstr|text|bstr|bytes|uri|tdate|time|number)\\b", name: "support.type.cddl" },
+    { match: "-?\\b\\d+(?:\\.\\d+)?\\b", name: "constant.numeric.cddl" },
+    { match: "^[A-Za-z@_$][\\w@.$-]*(?=\\s*/{0,2}=)", name: "entity.name.type.cddl" },
+    { match: "//|=>|/=|//=|\\?|\\*|\\+|\\^|=|~|&|\\.\\.\\.?", name: "keyword.operator.cddl" },
+    { match: "[,:]", name: "punctuation.separator.cddl" },
+  ],
+};
+```
+
+- What gets which color: keywords and JSON keys `--syn-keyword`; strings
+  and HTML tag names `--syn-string`; numbers, `true`/`false`/`null`, and
+  built-in types `--syn-constant`; function and type names and HTML
+  attributes `--syn-function`; `,` `:` `;` `--syn-punct`; comments
+  `--syn-comment`.
+
+### JSON at runtime
+
+`/assets/smart-json.js` is an ES module with no dependencies. It renders a
+value, or a string of JSON text, as escaped HTML in the same colors as
+Shiki's JSON (classes `sj-k`, `sj-s`, `sj-n`, `sj-l`, `sj-p`, colored by
+`smart-design.css`).
+
+```html
+<pre class="smart-code" id="response"></pre>
+<script type="module">
+  import { renderJson } from "/assets/smart-json.js";
+  renderJson(document.getElementById("response"), response);   // JSON.stringify(response, null, 2), highlighted
+</script>
+```
+
+- `jsonToHtml(value, { indent = 2, replacer })` returns the HTML string;
+  `renderJson(el, value, options)` fills `el` and adds the class
+  `smart-json`.
+- A string is highlighted as it is if it parses as JSON, otherwise shown as
+  plain text. The element's `textContent` is exactly the JSON text, so
+  copying or reading it gives valid JSON.
+- Everything is escaped; it is safe for untrusted input.
+- Bundled code that can't import from a URL can load the module with a
+  `<script type="module" src="/assets/smart-json.js">` tag and call
+  `globalThis.SmartJson.renderJson(…)`.
+
+### Copy buttons
+
+`site-chrome.js` adds a copy button to the top-right corner of every
+`<pre>`, including ones a script adds or refills later. It copies the
+block's text, shows a check, and announces "Copied to clipboard" to screen
+readers. It appears on hover or keyboard focus, and always on touch
+screens.
+
+- **Opt out** with `data-no-copy` on the `pre` or any ancestor (for
+  example, a tool that has its own Copy button).
+- The pre isn't moved or wrapped, and its `textContent` and `innerText` are
+  unchanged: the button sits in a zero-height `span.smart-copy-slot` at the
+  start of the pre and holds only an icon. Code that sets the pre's
+  `textContent` or `innerHTML` removes it, and the chrome puts it back.
+- Empty pres get no button until they have text.
 
 ## Testing
 

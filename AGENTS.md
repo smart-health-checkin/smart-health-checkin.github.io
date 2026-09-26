@@ -10,7 +10,13 @@ how to release. Read it before changing anything that crosses repositories.
 - Deploys on every push to `main`.
 - `assets/site-chrome.js` and `assets/smart-design.css` load at runtime on
   every page of the domain, so a mistake here breaks every section at once.
-  Check the pages of each section after changing them.
+  Check the pages of each section after changing them. Tools load
+  `assets/smart-json.js`. `assets/components.html` shows every token and
+  component; check it in light, `?theme=dark`, and `?theme=auto` with the
+  reader's scheme set to dark.
+- Colors: change a value in the `--theme-*` blocks (light, and both dark
+  blocks), never in a section's CSS, and keep every text pair at 4.5:1.
+  Keep old token names working.
 - The page API (placeholders for the bar, breadcrumb, tool bar, and footer;
   `<main id="main">`; breakpoints 64rem and 46rem) is documented in
   MAINTAINING.md, "The shared site". Other repos build on it: keep it

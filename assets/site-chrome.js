@@ -25,6 +25,8 @@
  *     (data-current, data-parent-href, data-parent-label: see MAINTAINING.md)
  *   <div data-smart-footer></div>              the footer
  *
+ * It also adds a copy button to every <pre> (opt out with data-no-copy).
+ *
  *   <link rel="stylesheet" href="/assets/smart-design.css">
  *   <script src="/assets/site-chrome.js" defer></script>
  */
@@ -547,6 +549,130 @@
     });
   }
 
+  // ---------- Copy buttons on code blocks ----------------------------
+  // Every <pre> gets a copy button, unless it or an ancestor has
+  // data-no-copy. The button sits in a zero-height sticky slot at the top
+  // of the pre (see .smart-copy-slot in smart-design.css): the pre isn't
+  // moved or wrapped, so frameworks that own it aren't disturbed, and its
+  // textContent is unchanged (the button holds only an icon). Pres added
+  // or refilled later, as the tools do, get one too.
+  var CHECK_ICON = '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"'
+    + ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8.5l3.2 3L13 4.5"></path></svg>';
+  var COPY_LABEL = 'Copy code';
+
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+    return new Promise(function (resolve, reject) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      ta.remove();
+      if (ok) resolve(); else reject(new Error('copy failed'));
+    });
+  }
+
+  function announce(msg) {
+    var live = document.getElementById('smart-copy-status');
+    if (!live) {
+      live = document.createElement('div');
+      live.id = 'smart-copy-status';
+      live.className = 'smart-sr';
+      live.setAttribute('role', 'status');
+      document.body.appendChild(live);
+    }
+    live.textContent = '';
+    setTimeout(function () { live.textContent = msg; }, 50);
+  }
+
+  function placeSlot(pre, slot) {
+    var cs = getComputedStyle(pre);
+    slot.style.setProperty('--_pt', cs.paddingTop);
+    slot.style.setProperty('--_pr', cs.paddingRight);
+  }
+
+  function addCopyButton(pre) {
+    if (pre.closest('[data-no-copy], .smart-topbar, .smart-menu-panel, .smart-footer')) return;
+    var first = pre.firstElementChild;
+    if (first && first.classList.contains('smart-copy-slot')) return;
+    var stale = pre.querySelector(':scope > .smart-copy-slot');
+    if (stale) stale.remove();
+    if (!/\S/.test(pre.textContent)) return;
+    var slot = document.createElement('span');
+    slot.className = 'smart-copy-slot';
+    slot.innerHTML = '<button type="button" class="smart-copy" aria-label="' + COPY_LABEL + '" title="' + COPY_LABEL + '">'
+      + '<span class="smart-copy-idle">' + COPY_ICON.replace('width="14" height="14"', 'width="16" height="16" focusable="false"') + '</span>'
+      + '<span class="smart-copy-done">' + CHECK_ICON + '</span></button>';
+    pre.insertBefore(slot, pre.firstChild);
+    placeSlot(pre, slot);
+  }
+
+  function scanForCode(root) {
+    if (!root || root.nodeType !== 1) return;
+    if (root.tagName === 'PRE') addCopyButton(root);
+    else {
+      var inPre = root.closest && root.closest('pre');
+      if (inPre) addCopyButton(inPre);
+      Array.prototype.forEach.call(root.getElementsByTagName('pre'), addCopyButton);
+    }
+  }
+
+  function wireCodeCopy() {
+    scanForCode(document.body);
+    // One listener for every button, including ones copied into a pre by
+    // code that rewrites its innerHTML.
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest && e.target.closest('.smart-copy');
+      if (!btn) return;
+      var pre = btn.closest('pre');
+      if (!pre) return;
+      var text = '';
+      Array.prototype.forEach.call(pre.childNodes, function (n) {
+        if (!(n.nodeType === 1 && n.classList.contains('smart-copy-slot'))) text += n.textContent;
+      });
+      copyText(text.replace(/\n$/, '')).then(function () {
+        btn.setAttribute('data-copied', '');
+        btn.setAttribute('aria-label', 'Copied');
+        announce('Copied to clipboard');
+      }, function () {
+        btn.setAttribute('aria-label', 'Copy failed');
+        announce('Copy failed');
+      }).then(function () {
+        clearTimeout(btn._smartTimer);
+        btn._smartTimer = setTimeout(function () {
+          btn.removeAttribute('data-copied');
+          btn.setAttribute('aria-label', COPY_LABEL);
+        }, 2000);
+      });
+    });
+    if (window.MutationObserver) {
+      new MutationObserver(function (records) {
+        records.forEach(function (r) {
+          if (r.target.nodeType === 1 && r.target.tagName === 'PRE') addCopyButton(r.target);
+          Array.prototype.forEach.call(r.addedNodes, function (n) {
+            if (n.nodeType === 1 && !n.classList.contains('smart-copy-slot')) scanForCode(n);
+            else if (n.nodeType === 3 && n.parentNode && n.parentNode.closest) {
+              var p = n.parentNode.closest('pre');
+              if (p) addCopyButton(p);
+            }
+          });
+        });
+      }).observe(document.body, { childList: true, subtree: true });
+    }
+    var t;
+    window.addEventListener('resize', function () {
+      clearTimeout(t);
+      t = setTimeout(function () {
+        Array.prototype.forEach.call(document.querySelectorAll('pre > .smart-copy-slot'), function (slot) { placeSlot(slot.parentNode, slot); });
+      }, 150);
+    });
+  }
+
   function mount() {
     var top = document.querySelector('[data-smart-topbar]');
     if (top && top.getAttribute('data-smart-topbar') === 'tool') toolBar(top);
@@ -566,6 +692,7 @@
         wireAutoHide(bar);
       }
     }
+    wireCodeCopy();
     var pending = SECTIONS.length;
     SECTIONS.forEach(function (section) {
       loadNav(section).then(function (items) {

@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shared components · SMART Health Check-in</title>
+<meta name="robots" content="noindex">
+<script>
+  // ?theme=light|dark|auto previews a mode; the default follows the reader.
+  (function () {
+    var t = new URLSearchParams(location.search).get('theme');
+    if (t === 'light') document.documentElement.removeAttribute('data-theme');
+    else if (t === 'dark' || t === 'auto') document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/smart-design.css">
+<script src="/assets/site-chrome.js" defer></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--font-sans); font-size: var(--fs-base); line-height: var(--lh-normal); }
+  .page { max-width: 56rem; margin: 0 auto; padding: var(--space-6) 24px var(--space-8); }
+  h1 { margin: 0 0 var(--space-2); font-size: var(--fs-2xl); letter-spacing: var(--tracking-tight); }
+  h2 { margin: var(--space-7) 0 var(--space-3); padding-top: var(--space-4); border-top: 1px solid var(--border); font-size: var(--fs-lg); }
+  p { color: var(--fg-2); max-width: 44rem; }
+  a { color: var(--brand); }
+  .modes a { font-weight: 600; margin-right: var(--space-3); }
+  .row { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; margin: var(--space-3) 0; }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: var(--space-2); margin: var(--space-3) 0; padding: 0; list-style: none; }
+  .swatches li { display: flex; align-items: center; gap: var(--space-2); font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--fg-2); }
+  .swatches i { width: 28px; height: 28px; flex: none; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+  @media (max-width: 46rem) { .page { padding: var(--space-5) 16px var(--space-7); } }
+</style>
+</head>
+<body>
+<div data-smart-topbar></div>
+<main id="main" class="page">
+  <h1>Shared components</h1>
+  <p>Every component in <code class="smart-inline-code">/assets/smart-design.css</code>, drawn from the semantic tokens. MAINTAINING.md, "The shared site", documents the tokens, the markup, and how a page opts in to dark.</p>
+  <p class="modes">Preview: <a href="?theme=light">Light</a> <a href="?theme=dark">Dark</a> <a href="?theme=auto">Follow the system</a></p>
+
+  <h2>Tokens</h2>
+  <ul class="swatches" id="swatches"></ul>
+
+  <h2>Buttons</h2>
+  <div class="row">
+    <button class="smart-btn primary">Primary</button>
+    <button class="smart-btn">Default</button>
+    <button class="smart-btn ghost">Ghost</button>
+    <button class="smart-btn sm">Small</button>
+    <button class="smart-btn link">Link button</button>
+    <button class="smart-btn" disabled>Disabled</button>
+  </div>
+
+  <h2>Pills and chips</h2>
+  <div class="row">
+    <span class="smart-pill ok">fulfilled</span>
+    <span class="smart-pill warn">partial</span>
+    <span class="smart-pill bad">declined</span>
+    <span class="smart-pill info">info</span>
+    <span class="smart-pill">neutral</span>
+  </div>
+  <div class="row">
+    <span class="smart-chip ok">Online</span>
+    <span class="smart-chip warn">Any browser</span>
+    <span class="smart-chip bad">Error</span>
+    <span class="smart-chip info">In person</span>
+    <span class="smart-chip">Plain</span>
+  </div>
+
+  <h2>Callouts</h2>
+  <div class="smart-callout"><span class="smart-callout-title">Note</span>Info is the default: a <a href="#">link</a> and <code class="smart-inline-code">inline code</code> inside.</div>
+  <div class="smart-callout ok">The response verified.</div>
+  <div class="smart-callout warn">This is a draft and will change.</div>
+  <div class="smart-callout bad">The wallet returned an item the page didn't ask for.</div>
+  <p class="smart-note">A plain note with a left rule (<code class="smart-inline-code">.smart-note</code>).</p>
+
+  <h2>Table</h2>
+  <div class="smart-table-wrap">
+    <table class="smart-table">
+      <thead><tr><th>Item</th><th>Status</th><th>Media type</th><th class="num">Bytes</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>allergies</td><td><span class="smart-pill ok">fulfilled</span></td><td><code class="smart-inline-code">application/fhir+json</code></td><td class="num">18,422</td><td>Wide enough to scroll on a phone, so the edge shadows show.</td></tr>
+        <tr><td>insurance</td><td><span class="smart-pill ok">fulfilled</span></td><td><code class="smart-inline-code">application/smart-health-card</code></td><td class="num">2,210</td><td>One card.</td></tr>
+        <tr><td>phq2</td><td><span class="smart-pill bad">declined</span></td><td>—</td><td class="num">0</td><td>The person said no.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Field list</h2>
+  <dl class="smart-fields">
+    <dt>type</dt><dd><code class="smart-inline-code">smart-health-checkin-request</code></dd>
+    <dt>purpose</dt><dd>Before your visit with Dr. Reyes</dd>
+    <dt>A longer field name</dt><dd>Values wrap: https://smart-health-checkin.org/spec/#6-4-verifier-cross-validation</dd>
+  </dl>
+
+  <h2>Tabs</h2>
+  <div class="smart-tabs" role="tablist" aria-label="Views">
+    <button role="tab" aria-selected="true">Readable</button>
+    <button role="tab" aria-selected="false">JSON</button>
+    <button role="tab" aria-selected="false">Wire</button>
+  </div>
+
+  <h2>Details</h2>
+  <details class="smart-details" open>
+    <summary>Request JSON</summary>
+    <pre class="smart-code" id="runtime-json"></pre>
+  </details>
+  <details class="smart-details">
+    <summary>Closed by default</summary>
+    <p>Content.</p>
+  </details>
+
+  <h2>Code, highlighted at build time (Shiki)</h2>
+  <pre class="shiki css-variables" style="background-color:var(--shiki-background);color:var(--shiki-foreground)" tabindex="0"><code><span class="line"><span style="color:var(--shiki-token-keyword)">import</span><span style="color:var(--shiki-foreground)"> { requestCheckin } </span><span style="color:var(--shiki-token-keyword)">from</span><span style="color:var(--shiki-token-string-expression)"> "smart-health-checkin"</span><span style="color:var(--shiki-foreground)">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:var(--shiki-token-comment)">// Ask the patient's wallet for two items.</span></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">export</span><span style="color:var(--shiki-token-keyword)"> async</span><span style="color:var(--shiki-token-keyword)"> function</span><span style="color:var(--shiki-token-function)"> checkIn</span><span style="color:var(--shiki-foreground)">(verifier</span><span style="color:var(--shiki-token-keyword)">:</span><span style="color:var(--shiki-token-function)"> Verifier</span><span style="color:var(--shiki-token-punctuation)">,</span><span style="color:var(--shiki-foreground)"> visitId</span><span style="color:var(--shiki-token-keyword)">:</span><span style="color:var(--shiki-token-constant)"> string</span><span style="color:var(--shiki-foreground)">) {</span></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">  const</span><span style="color:var(--shiki-token-constant)"> response</span><span style="color:var(--shiki-token-keyword)"> =</span><span style="color:var(--shiki-token-keyword)"> await</span><span style="color:var(--shiki-token-function)"> requestCheckin</span><span style="color:var(--shiki-foreground)">(verifier</span><span style="color:var(--shiki-token-punctuation)">,</span><span style="color:var(--shiki-foreground)"> {</span></span>
+<span class="line"><span style="color:var(--shiki-foreground)">    purpose</span><span style="color:var(--shiki-token-keyword)">:</span><span style="color:var(--shiki-token-string-expression)"> "Before your visit"</span><span style="color:var(--shiki-token-punctuation)">,</span></span>
+<span class="line"><span style="color:var(--shiki-foreground)">    items</span><span style="color:var(--shiki-token-keyword)">:</span><span style="color:var(--shiki-foreground)"> [{ id</span><span style="color:var(--shiki-token-keyword)">:</span><span style="color:var(--shiki-token-string-expression)"> "allergies"</span><span style="color:var(--shiki-token-punctuation)">,</span><span style="color:var(--shiki-foreground)"> required</span><span style="color:var(--shiki-token-keyword)">:</span><span style="color:var(--shiki-token-constant)"> true</span><span style="color:var(--shiki-foreground)"> }]</span><span style="color:var(--shiki-token-punctuation)">,</span></span>
+<span class="line"><span style="color:var(--shiki-foreground)">    timeoutMs</span><span style="color:var(--shiki-token-keyword)">:</span><span style="color:var(--shiki-token-constant)"> 120_000</span><span style="color:var(--shiki-token-punctuation)">,</span></span>
+<span class="line"><span style="color:var(--shiki-foreground)">  });</span></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">  return</span><span style="color:var(--shiki-token-constant)"> response</span><span style="color:var(--shiki-token-function)">.</span><span style="color:var(--shiki-token-constant)">requestStatus</span><span style="color:var(--shiki-token-function)">.filter</span><span style="color:var(--shiki-foreground)">((s) </span><span style="color:var(--shiki-token-keyword)">=></span><span style="color:var(--shiki-token-constant)"> s</span><span style="color:var(--shiki-foreground)">.status </span><span style="color:var(--shiki-token-keyword)">===</span><span style="color:var(--shiki-token-string-expression)"> "fulfilled"</span><span style="color:var(--shiki-foreground)">);</span></span>
+<span class="line"><span style="color:var(--shiki-foreground)">}</span></span></code></pre>
+  <pre class="shiki css-variables" style="background-color:var(--shiki-background);color:var(--shiki-foreground)" tabindex="0"><code><span class="line"><span style="color:var(--shiki-foreground)">{</span></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">  "type"</span><span style="color:var(--shiki-token-punctuation)">:</span><span style="color:var(--shiki-token-string-expression)"> "smart-health-checkin-request"</span><span style="color:var(--shiki-token-punctuation)">,</span></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">  "version"</span><span style="color:var(--shiki-token-punctuation)">:</span><span style="color:var(--shiki-token-string-expression)"> "1"</span><span style="color:var(--shiki-token-punctuation)">,</span></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">  "items"</span><span style="color:var(--shiki-token-punctuation)">:</span><span style="color:var(--shiki-foreground)"> [</span></span>
+<span class="line"><span style="color:var(--shiki-foreground)">    { </span><span style="color:var(--shiki-token-keyword)">"id"</span><span style="color:var(--shiki-token-punctuation)">:</span><span style="color:var(--shiki-token-string-expression)"> "insurance"</span><span style="color:var(--shiki-token-punctuation)">,</span><span style="color:var(--shiki-token-keyword)"> "required"</span><span style="color:var(--shiki-token-punctuation)">:</span><span style="color:var(--shiki-token-constant)"> false</span><span style="color:var(--shiki-token-punctuation)">,</span><span style="color:var(--shiki-token-keyword)"> "accept"</span><span style="color:var(--shiki-token-punctuation)">:</span><span style="color:var(--shiki-foreground)"> [</span><span style="color:var(--shiki-token-string-expression)">"application/smart-health-card"</span><span style="color:var(--shiki-foreground)">] }</span></span>
+<span class="line"><span style="color:var(--shiki-foreground)">  ]</span><span style="color:var(--shiki-token-punctuation)">,</span></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">  "expires"</span><span style="color:var(--shiki-token-punctuation)">:</span><span style="color:var(--shiki-token-constant)"> 1767225600</span><span style="color:var(--shiki-token-punctuation)">,</span></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">  "retry"</span><span style="color:var(--shiki-token-punctuation)">:</span><span style="color:var(--shiki-token-constant)"> null</span></span>
+<span class="line"><span style="color:var(--shiki-foreground)">}</span></span></code></pre>
+  <pre class="shiki css-variables" style="background-color:var(--shiki-background);color:var(--shiki-foreground)" tabindex="0"><code><span class="line"><span style="color:var(--shiki-foreground)">&#x3C;</span><span style="color:var(--shiki-token-string-expression)">script</span><span style="color:var(--shiki-token-function)"> type</span><span style="color:var(--shiki-token-keyword)">=</span><span style="color:var(--shiki-token-string-expression)">"module"</span><span style="color:var(--shiki-token-function)"> src</span><span style="color:var(--shiki-token-keyword)">=</span><span style="color:var(--shiki-token-string-expression)">"/client/lib/0.4.1/smart-health-checkin.js"</span><span style="color:var(--shiki-foreground)">>&#x3C;/</span><span style="color:var(--shiki-token-string-expression)">script</span><span style="color:var(--shiki-foreground)">></span></span>
+<span class="line"><span style="color:var(--shiki-foreground)">&#x3C;</span><span style="color:var(--shiki-token-string-expression)">button</span><span style="color:var(--shiki-token-function)"> id</span><span style="color:var(--shiki-token-keyword)">=</span><span style="color:var(--shiki-token-string-expression)">"start"</span><span style="color:var(--shiki-token-function)"> class</span><span style="color:var(--shiki-token-keyword)">=</span><span style="color:var(--shiki-token-string-expression)">"smart-btn primary"</span><span style="color:var(--shiki-foreground)">>Check in&#x3C;/</span><span style="color:var(--shiki-token-string-expression)">button</span><span style="color:var(--shiki-foreground)">></span></span></code></pre>
+  <pre class="shiki css-variables" style="background-color:var(--shiki-background);color:var(--shiki-foreground)" tabindex="0"><code><span class="line"><span style="color:var(--shiki-token-function)">npm</span><span style="color:var(--shiki-token-string)"> install</span><span style="color:var(--shiki-token-string)"> https://smart-health-checkin.org/client/lib/0.4.1/smart-health-checkin.tgz</span><span style="color:var(--shiki-token-comment)">  # pinned</span></span>
+<span class="line"><span style="color:var(--shiki-token-function)">bun</span><span style="color:var(--shiki-token-string)"> run</span><span style="color:var(--shiki-token-string)"> build</span></span></code></pre>
+  <pre class="smart-code" data-no-copy><code>A pre with data-no-copy: no copy button.</code></pre>
+  <pre class="smart-code"><code>A plain block with one very long line that has to scroll sideways on a phone: https://smart-health-checkin.org/client/lib/0.4.1/smart-health-checkin.js?and=a&amp;long=query&amp;string=here</code></pre>
+
+  <h2>Prose scope</h2>
+  <div class="smart-prose">
+    <p>Inside <code>.smart-prose</code>, rendered Markdown needs no classes: inline <code>code</code>, blocks, tables, blockquotes, and details.</p>
+    <blockquote><p>A Markdown blockquote reads as an info callout.</p></blockquote>
+    <pre><code>{ "plain": "pre in prose" }</code></pre>
+    <table><thead><tr><th>Name</th><th>Value</th></tr></thead><tbody><tr><td>a</td><td>1</td></tr></tbody></table>
+  </div>
+</main>
+<div data-smart-footer></div>
+<script type="module">
+  import { renderJson } from '/assets/smart-json.js';
+  renderJson(document.getElementById('runtime-json'), {
+    type: 'smart-health-checkin-response', version: '1', requestId: '8f2c<script>',
+    artifacts: [{ id: 'a1', fulfills: ['allergies'], mediaType: 'application/fhir+json', size: 18422, verified: true }],
+    requestStatus: [{ item: 'phq2', status: 'declined', reason: null }]
+  });
+  var names = ['bg','bg-alt','surface','surface-alt','fg-1','fg-2','fg-3','border','border-strong','brand','brand-ink','brand-wash','focus',
+    'status-ok','status-ok-wash','status-warn','status-warn-wash','status-bad','status-bad-wash','status-info','status-info-wash',
+    'code-bg','code-fg','syn-comment','syn-keyword','syn-string','syn-constant','syn-function','syn-punct'];
+  document.getElementById('swatches').innerHTML = names.map(function (n) {
+    return '<li><i style="background:var(--' + n + ')"></i>--' + n + '</li>';
+  }).join('');
+</script>
+</body>
+</html>
