@@ -10,7 +10,7 @@ repositories.
 | Repo | What it is | Deploys | Publishes | Consumes |
 | --- | --- | --- | --- | --- |
 | [smart-health-checkin.github.io](https://github.com/smart-health-checkin/smart-health-checkin.github.io) (the apex) | Home page, shared look (`assets/`), this file | `/`, `/assets/`, `/ktc/` on every push to `main` | Nothing versioned | Each section's `nav.json`, in the browser |
-| [spec](https://github.com/smart-health-checkin/spec) | The draft spec, explainers, capture inspector, conformance fixtures | `/spec/` on every push to `main` | `fixtures-vN` tags | client (release tarball) |
+| [spec](https://github.com/smart-health-checkin/spec) | The draft spec, explainers, capture inspector, conformance fixtures | `/spec/` on every push to `main` | `vX.Y.Z` tags (fixtures and conformance cases) | client (release tarball) |
 | [client](https://github.com/smart-health-checkin/client) | The JavaScript library, its docs and demos | `/client/` on every push to `main`, and after every release | `vX.Y.Z` GitHub releases: npm tarball plus hosted bundles | spec fixtures (tag) |
 | [connectathon](https://github.com/smart-health-checkin/connectathon) | Scenarios, Testing EHR, testing wallet, participant registry, results | `/connectathon/` on push to `main`, hourly, and on issue changes | Nothing versioned | client (release tarball), the Android APK (latest release) |
 | [android-wallet](https://github.com/smart-health-checkin/android-wallet) | The reference Android wallet | Nothing | `vX.Y.Z` GitHub releases: the APK | spec fixtures (tag), client (release tarball, for test vectors) |
@@ -20,7 +20,7 @@ repositories.
 Dependencies only run one way:
 
 ```
-spec (fixtures-vN) ──► client, android-wallet, swift, connectathon (conformance cases)
+spec (vX.Y.Z) ──► client, android-wallet, swift, connectathon (fixtures, conformance cases)
 client (vX.Y.Z)    ──► connectathon, spec, android-wallet, outside developers
 android-wallet (vX.Y.Z) ──► connectathon's Android CI, download links
 apex (assets/, runtime) ──► every page on the domain
@@ -77,21 +77,19 @@ so a missed pin shows up before deploy.
 2. Nothing else to update: every link and connectathon's CI use
    `releases/latest/download/smart-health-checkin-wallet-debug.apk`.
 
-### Spec fixtures and conformance cases (`fixtures-vN`)
+### Spec (`vX.Y.Z`: fixtures and conformance cases)
 
-A `fixtures-vN` tag covers both `fixtures/` (real captures) and
+A spec tag pins `fixtures/` (the real capture and synthetic fixtures) and
 `conformance/` (the single-capability cases every implementation runs, with a
-known-failures list). Current: `fixtures-v2`.
+known-failures list) for everything that tests against them. Current:
+`v1.0.0-draft.1`; the next draft is `v1.0.0-draft.2`.
 
 1. Change `fixtures/`, or change and re-run `tools/conformance/generate.ts`,
-   in spec. Consumers can try it first with `SPEC_FIXTURES_DIR=../spec/fixtures`
-   or `SPEC_CONFORMANCE_DIR=../spec/conformance`.
-2. Tag in spec: `git tag -a fixtures-vN -m fixtures-vN && git push origin fixtures-vN`.
-3. Bump `SPEC_FIXTURES_REF` in `scripts/fetch-fixtures.sh` (client,
-   android-wallet, swift) and `SPEC_CONFORMANCE_REF` in
-   `scripts/fetch-conformance.sh` (client, connectathon, android-wallet,
-   swift). Run their tests, update each `known-failures.json` (a listed case
-   that now passes fails CI until removed), and commit.
+   in spec. Consumers can try it first with `SPEC_DIR=../spec`.
+2. Tag in spec: `git tag -a vX.Y.Z -m vX.Y.Z && git push origin vX.Y.Z`.
+3. Bump `SPEC_REF` in `scripts/fetch-spec.sh` in client, android-wallet,
+   swift, and connectathon. Run their tests, update each `known-failures.json`
+   (a listed case that now passes fails CI until removed), and commit.
 
 ### Swift package (`vX.Y.Z`)
 
