@@ -1,11 +1,18 @@
 /**
- * The site's chrome — spectrum stripe, sticky topbar, deep footer — rendered
- * from one script served at the apex.
+ * The site's chrome: spectrum stripe, sticky topbar, footer. Every section
+ * of smart-health-checkin.org loads this file and smart-design.css from the
+ * apex at runtime, so the look changes everywhere at once.
  *
- * Every part of the site loads this file and /assets/smart-design.css, so the
- * whole domain has one navigation model no matter which repository deployed
- * the page you happen to be on. A project repo mounted at a subpath does not
- * define its own bar; it adds its pages to NAV here.
+ * What's in each section is that section's business. Each is its own site,
+ * deployed from its own repository, and publishes its menu as nav.json:
+ *
+ *   { "label": "Spec", "href": "./",
+ *     "items": [ { "title": "Model", "href": "smart-model-explainer.html", "note": "…" } ] }
+ *
+ * with hrefs relative to the nav.json itself. The bar renders at once with
+ * plain section links; each becomes a dropdown when its nav.json arrives, and
+ * a missing or broken one just leaves the plain link. This file knows only
+ * the sections' names, front pages, and nav.json locations (SECTIONS).
  *
  *   <link rel="stylesheet" href="/assets/smart-design.css">
  *   <div data-smart-topbar></div>   …page…   <div data-smart-footer></div>
@@ -26,83 +33,35 @@
     + '<path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.6" fill="none"'
     + ' stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-  // Every href is site-absolute: these cross repository boundaries.
-  // A group lights up when `match` tests true against the current path.
-  var NAV = [
-    { href: '/', label: 'Overview', match: /^\/$/, llms: '/' },
-    {
-      label: 'Spec', href: '/spec/', match: /^\/spec\//, llms: '/spec/',
-      items: [
-        { href: '/spec/smart-model-explainer.html', label: 'Model', note: 'Request and response JSON' },
-        { href: '/spec/wire-protocol-explainer.html', label: 'Wire protocol', note: 'CBOR, COSE, HPKE' },
-        { href: '/spec/wire-protocol-inspector.html', label: 'Capture inspector', note: 'Byte-level fixture viewer' },
-        { href: '/spec/kiosk-flow-explainer.html', label: 'Kiosk flow', note: 'Front-desk handoff' },
-        { href: '/spec/', label: 'Draft spec 1.0', note: 'Normative reference' }
-      ]
-    },
-    {
-      // Mirrors the client docs' nav.json (https://smart-health-checkin.org/client/nav.json),
-      // generated from client/scripts/site-nav.ts. Keep the two in step.
-      label: 'Developers', href: '/client/', match: /^\/client\/(?!demo\/)/, llms: '/client/',
-      items: [
-        { href: '/client/docs/tutorial.html', label: 'Tutorial', note: 'Build a check-in page, end to end' },
-        { href: '/client/docs/requests.html', label: 'Asking for data', note: 'Items, records, forms, formats' },
-        { href: '/client/docs/wallets.html', label: 'Offering wallets', note: 'The picker, registries, kiosks' },
-        { href: '/client/docs/responses.html', label: 'Using the answer', note: 'Lookups, health cards, prefill, FHIR' },
-        { href: '/client/docs/production.html', label: 'Going to production', note: 'Keys, trust, fallback, privacy' },
-        { href: '/client/docs/build-a-wallet.html', label: 'Building a wallet', note: 'For health-app builders' },
-        { href: '/client/docs/testing.html', label: 'Testing', note: 'Mock wallet, testing tools, failures' },
-        { href: '/client/docs/api/', label: 'API reference', note: 'Every export, by module' }
-      ]
-    },
-    {
-      label: 'Demos', href: '/client/demo/', match: /^\/client\/demo\//, llms: '/client/',
-      items: [
-        { href: '/client/demo/', label: 'Clinic check-in' },
-        { href: '/client/demo/tutorial.html', label: 'Tutorial page', note: 'The tutorial, finished' },
-        { href: '/client/demo/kiosk.html', label: 'Kiosk check-in', note: 'Hand off to the phone' },
-        { href: '/client/demo/autofill.html#wallet=demo', label: 'Allergy autofill' },
-        { href: '/client/demo/react.html', label: 'React example' },
-        { href: '/client/demo/angular.html', label: 'Angular example' },
-        { href: '/client/demo/wallet.html', label: 'Demo wallet', note: 'The responder side' }
-      ]
-    },
-    {
-      label: 'Connectathon', href: '/connectathon/', match: /^\/connectathon\//,
-      items: [
-        { href: '/connectathon/', label: 'Scenarios', note: 'KTC pre-visit check-in testing' },
-        { href: '/connectathon/directory.html', label: 'Directory', note: 'Who is testing what' },
-        { href: '/connectathon/results.html', label: 'Results' },
-        { href: '/connectathon/requests/', label: 'Requests' },
-        { href: '/client/docs/web-wallet-handoff.html', label: 'Web wallet hand-off' }
-      ]
-    }
+  // The sections, and where each publishes its menu. This is the whole
+  // cross-section contract.
+  var SECTIONS = [
+    { label: 'Overview', href: '/', match: /^\/$/, llms: '/' },
+    { label: 'Spec', href: '/spec/', match: /^\/spec\//, llms: '/spec/', nav: '/spec/nav.json' },
+    { label: 'Developers', href: '/client/', match: /^\/client\/(?!demo\/)/, llms: '/client/', nav: '/client/nav.json' },
+    { label: 'Demos', href: '/client/demo/', match: /^\/client\/demo\//, llms: '/client/', nav: '/client/demo/nav.json' },
+    { label: 'Connectathon', href: '/connectathon/', match: /^\/connectathon\//, llms: '/connectathon/', nav: '/connectathon/nav.json' }
   ];
 
-  var FOOTER = [
-    { title: 'Protocol', links: [
-      { href: '/spec/', label: 'Specification' },
-      { href: '/spec/spec.md', label: 'Spec source' },
-      { href: 'https://github.com/smart-health-checkin/spec/tree/main/fixtures', label: 'Conformance fixtures', ext: true }
-    ] },
-    { title: 'Developers', links: [
-      { href: '/client/', label: 'Overview' },
-      { href: '/client/docs/tutorial.html', label: 'Tutorial' },
-      { href: '/client/docs/build-a-wallet.html', label: 'Building a wallet' },
-      { href: '/client/docs/api/', label: 'API reference' }
-    ] },
-    { title: 'Try it', links: [
-      { href: '/client/demo/', label: 'Clinic check-in demo' },
-      { href: '/client/demo/kiosk.html', label: 'Kiosk check-in' },
-      { href: '/client/demo/autofill.html#wallet=demo', label: 'Allergy autofill' },
-      { href: '/client/demo/wallet.html', label: 'Demo wallet' }
-    ] },
-    { title: 'Project', links: [
-      { href: 'https://github.com/smart-health-checkin', label: 'GitHub org', ext: true },
-      { href: 'https://github.com/smart-health-checkin/spec', label: 'spec', ext: true },
-      { href: 'https://github.com/smart-health-checkin/client', label: 'client', ext: true }
-    ] }
-  ];
+  /** A section's menu items, with hrefs made absolute against its nav.json. */
+  function loadNav(section) {
+    if (!section.nav) return Promise.resolve(null);
+    var base = new URL(section.nav, location.origin);
+    return fetch(base.href)
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (json) {
+        var items = Array.isArray(json && json.items) ? json.items : [];
+        return items.filter(function (i) { return i && i.href && (i.title || i.label); }).map(function (i) {
+          var url = new URL(i.href, base);
+          return {
+            href: url.origin === location.origin ? url.pathname + url.search + url.hash : url.href,
+            label: String(i.title || i.label),
+            note: i.note ? String(i.note) : ''
+          };
+        });
+      })
+      .catch(function () { return null; });
+  }
 
   function esc(s) {
     return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
@@ -118,22 +77,23 @@
     return target === path.replace(/index\.html$/, '');
   }
 
-  function navItem(item, path) {
-    if (!item.items) {
-      var cur = item.match.test(path) ? ' aria-current="page"' : '';
-      return '<a href="' + esc(item.href) + '"' + cur + '>' + esc(item.label) + '</a>';
-    }
-    var active = item.match.test(path);
-    var menu = item.items.map(function (child) {
+  function sectionLink(section, path) {
+    var cur = section.match.test(path) ? ' aria-current="page"' : '';
+    return '<a href="' + esc(section.href) + '" data-section="' + esc(section.label) + '"' + cur + '>' + esc(section.label) + '</a>';
+  }
+
+  function sectionDropdown(section, items, path) {
+    var active = section.match.test(path);
+    var menu = items.map(function (child) {
       var childCur = samePage(child.href, path) ? ' aria-current="page"' : '';
       return '<a role="menuitem" href="' + esc(child.href) + '"' + childCur + '>'
         + '<span class="dd-label">' + esc(child.label) + '</span>'
         + (child.note ? '<span class="dd-note">' + esc(child.note) + '</span>' : '')
         + '</a>';
     }).join('');
-    return '<div class="dropdown" data-active="' + (active ? 'true' : 'false') + '">'
+    return '<div class="dropdown" data-section="' + esc(section.label) + '" data-active="' + (active ? 'true' : 'false') + '">'
       +   '<button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false">'
-      +     esc(item.label) + CARET
+      +     esc(section.label) + CARET
       +   '</button>'
       +   '<div class="dropdown-menu" role="menu">' + menu + '</div>'
       + '</div>';
@@ -141,7 +101,7 @@
 
   /** The section root whose llms files describe this page; the apex if none. */
   function llmsRoot(path) {
-    for (var i = 0; i < NAV.length; i++) if (NAV[i].match.test(path)) return NAV[i].llms;
+    for (var i = 0; i < SECTIONS.length; i++) if (SECTIONS[i].match.test(path)) return SECTIONS[i].llms;
     return '/';
   }
 
@@ -201,7 +161,7 @@
       +       '<span class="smart-mark-text"><span class="smart-mark-title">SMART Health Check-in</span></span>'
       +     '</a>'
       +     '<nav class="smart-topbar-nav" aria-label="Primary">'
-      +       NAV.map(function (item) { return navItem(item, path); }).join('')
+      +       SECTIONS.map(function (section) { return sectionLink(section, path); }).join('')
       +       '<span class="sep" aria-hidden="true"></span>'
       +       '<a href="https://github.com/smart-health-checkin" target="_blank" rel="noopener">GitHub</a>'
       +       llmsWidget(path)
@@ -210,16 +170,19 @@
       + '</header>';
   }
 
-  function footer() {
-    var cols = FOOTER.map(function (col) {
-      var links = col.links.map(function (l) {
-        return '<li><a href="' + esc(l.href) + '"'
-          + (l.ext ? ' target="_blank" rel="noopener"' : '') + '>'
-          + esc(l.label) + (l.ext ? ' ↗' : '') + '</a></li>';
-      }).join('');
-      return '<div><h4>' + esc(col.title) + '</h4><ul>' + links + '</ul></div>';
-    }).join('');
+  // One column per section, filled from the same nav.json files as the bar.
+  function footerColumn(section, items) {
+    var links = [{ href: section.href, label: section.label === 'Overview' ? 'Home' : 'Overview' }].concat((items || []).slice(0, 5));
+    return '<div data-section="' + esc(section.label) + '"><h4>' + esc(section.label) + '</h4><ul>'
+      + links.map(function (l) { return '<li><a href="' + esc(l.href) + '">' + esc(l.label) + '</a></li>'; }).join('')
+      + '</ul></div>';
+  }
 
+  function footer() {
+    var cols = SECTIONS.filter(function (s) { return s.nav; }).map(function (s) { return footerColumn(s, null); }).join('')
+      + '<div><h4>Project</h4><ul>'
+      +   '<li><a href="https://github.com/smart-health-checkin" target="_blank" rel="noopener">GitHub ↗</a></li>'
+      + '</ul></div>';
     return '<footer class="smart-footer">'
       +   spectrum()
       +   '<div class="site-foot-inner">'
@@ -242,17 +205,17 @@
         if (t) t.setAttribute('aria-expanded', 'false');
       });
     }
-    var triggers = root.querySelectorAll('.dropdown-trigger');
-    Array.prototype.forEach.call(triggers, function (t) {
-      t.addEventListener('click', function (e) {
-        e.stopPropagation();
-        var dd = t.parentNode;
-        var open = dd.getAttribute('data-open') === 'true';
-        closeAll(dd);
-        dd.setAttribute('data-open', open ? 'false' : 'true');
-        t.setAttribute('aria-expanded', open ? 'false' : 'true');
-        if (!open) keepInViewport(dd.querySelector('.dropdown-menu'));
-      });
+    // Delegated, so dropdowns that arrive with a nav.json work too.
+    root.addEventListener('click', function (e) {
+      var t = e.target.closest && e.target.closest('.dropdown-trigger');
+      if (!t) return;
+      e.stopPropagation();
+      var dd = t.parentNode;
+      var open = dd.getAttribute('data-open') === 'true';
+      closeAll(dd);
+      dd.setAttribute('data-open', open ? 'false' : 'true');
+      t.setAttribute('aria-expanded', open ? 'false' : 'true');
+      if (!open) keepInViewport(dd.querySelector('.dropdown-menu'));
     });
     // A menu opens from its trigger's left edge (right edge on narrow
     // screens). Near either side of the window that can push it off screen,
@@ -287,6 +250,16 @@
     if (foot) foot.outerHTML = footer();
     var bar = document.querySelector('.smart-topbar');
     if (bar) { wireDropdowns(bar); wireCopy(bar); }
+    var path = location.pathname;
+    SECTIONS.forEach(function (section) {
+      loadNav(section).then(function (items) {
+        if (!items || !items.length) return;
+        var link = bar && bar.querySelector('a[data-section="' + section.label + '"]');
+        if (link) link.outerHTML = sectionDropdown(section, items, path);
+        var col = document.querySelector('.smart-footer [data-section="' + section.label + '"]');
+        if (col) col.outerHTML = footerColumn(section, items);
+      });
+    });
   }
 
   if (document.readyState === 'loading') {
