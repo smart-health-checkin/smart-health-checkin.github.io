@@ -110,8 +110,8 @@ Not versioned. Push to `main` and they deploy.
 - **Look:** every page loads `/assets/site-chrome.js` and
   `/assets/smart-design.css` from the apex at runtime. A change there shows
   everywhere at once. The stylesheet holds the colors for light and dark
-  ([Colors and dark mode](#colors-and-dark-mode)) and the shared
-  [components](#components); tools that show JSON load
+  ([Colors and dark mode](#colors-and-dark-mode)), the shared
+  [components](#components), and the [diagram](#diagrams) classes; tools that show JSON load
   [`/assets/smart-json.js`](#json-at-runtime).
 - **Menus:** each section publishes `nav.json` (`/spec/nav.json`,
   `/client/nav.json`, `/client/demo/nav.json`, `/connectathon/nav.json`), with
@@ -383,6 +383,41 @@ display a class sets, and turns off font ligatures in `code`, `pre`,
   <pre class="smart-code">…</pre>
 </details>
 ```
+
+### Diagrams
+
+Explanatory drawings are inline SVG with class `xd`, inside a
+`div.xd-figure` frame. Their classes take every color from the tokens, so
+one SVG works in light and dark. The spec's
+[Kiosk check-in](https://smart-health-checkin.org/spec/kiosk.html) and
+[Request and response](https://smart-health-checkin.org/spec/request-response.html)
+pages and the client's
+[Wallet picker](https://smart-health-checkin.org/client/docs/wallets.html#kiosk-hand-off)
+guide use them.
+
+- **Size and phones:** `.xd` fills the frame and is at least 640px wide; a
+  wider drawing scrolls sideways inside its frame. So nothing scrolls
+  sideways on a phone, draw a second, stacked version (about 360 wide) and
+  put both in the page: the wide one in `.xd-figure.xd-wide`, the stacked
+  one in `.xd-figure.xd-narrow`. Below 46rem only the narrow one shows.
+- **Accessible name:** give each SVG `role="img"`, a `<title>` and a
+  `<desc>` that says in words what the drawing shows, and
+  `aria-labelledby` naming both. Ids (markers too) must be unique on the
+  page.
+
+| Class | What it draws |
+| --- | --- |
+| `head`, `sub` | A column heading and the gray line under it |
+| `t`, `s` | A box's title and its text |
+| `mono`, `code` | Gray monospace text; a code name, in `--brand-ink` |
+| `box` (`.off` dashed, for something waiting or not taken), `off-t` | A box and its muted text |
+| `band`, `lane`, `rule` | A shaded row, a dashed column divider, a plain line |
+| `num`, `num-t`, `step` | A numbered step circle, its number, and the step's caps label |
+| `arrow`, `arrow-soft`; markers `ah`, `ah-soft` | A solid brand arrow and a dashed gray one, with their heads |
+| `chip`, `chip-t` | A rounded label on a brand wash, for what travels along an arrow |
+| `pill-ok`/`-warn`/`-off` and `-t`, `ok-t` | Status pills and green text |
+| `link`, `dot`, `rec-kind` | Links between matched items, their end dots, and a record's kind label |
+| `ico`, `key`, `lock` (`.open`), `qr` | Line icons, a gold key, a lock, and a QR code's squares |
 
 ### Syntax highlighting
 
