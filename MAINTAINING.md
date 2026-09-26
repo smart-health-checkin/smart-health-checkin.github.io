@@ -20,7 +20,7 @@ repositories.
 Dependencies only run one way:
 
 ```
-spec (fixtures-vN) ──► client, android-wallet, swift
+spec (fixtures-vN) ──► client, android-wallet, swift, connectathon (conformance cases)
 client (vX.Y.Z)    ──► connectathon, spec, android-wallet, outside developers
 android-wallet (wallet-vX.Y.Z) ──► connectathon's Android CI, download links
 apex (assets/, runtime) ──► every page on the domain
@@ -47,7 +47,7 @@ Nothing is shared by copying files between repos, and there are no submodules.
 | connectathon site deploy completes | connectathon's self-test drives the live Testing EHR against the live testing wallet; failures open an issue |
 | Nightly | connectathon: self-test, and the Android end-to-end run against the latest APK |
 | Hourly | connectathon: site rebuild (registry, results) and wallet-registry liveness |
-| Push or PR in android-wallet, swift | Their tests, which fetch the pinned spec fixtures |
+| Push or PR in android-wallet, swift | Their tests, which fetch the pinned spec fixtures and conformance cases |
 | Participant PR in connectathon | Validated, and auto-merged when the author owns the participant file |
 
 No workflow triggers another repository. A client or wallet release reaches a
@@ -77,13 +77,21 @@ so a missed pin shows up before deploy.
 2. Nothing else to update: every link and connectathon's CI use
    `releases/latest/download/smart-checkin-wallet-debug.apk`.
 
-### Spec fixtures (`fixtures-vN`)
+### Spec fixtures and conformance cases (`fixtures-vN`)
 
-1. Change `fixtures/` in spec. Consumers can try the change first with
-   `SPEC_FIXTURES_DIR=../spec/fixtures`.
+A `fixtures-vN` tag covers both `fixtures/` (real captures) and
+`conformance/` (the single-capability cases every implementation runs, with a
+known-failures list). Current: `fixtures-v2`.
+
+1. Change `fixtures/`, or change and re-run `tools/conformance/generate.ts`,
+   in spec. Consumers can try it first with `SPEC_FIXTURES_DIR=../spec/fixtures`
+   or `SPEC_CONFORMANCE_DIR=../spec/conformance`.
 2. Tag in spec: `git tag -a fixtures-vN -m fixtures-vN && git push origin fixtures-vN`.
-3. Bump `SPEC_FIXTURES_REF` in `scripts/fetch-fixtures.sh` in client,
-   android-wallet, and swift; run their tests; commit.
+3. Bump `SPEC_FIXTURES_REF` in `scripts/fetch-fixtures.sh` (client,
+   android-wallet, swift) and `SPEC_CONFORMANCE_REF` in
+   `scripts/fetch-conformance.sh` (client, connectathon, android-wallet,
+   swift). Run their tests, update each `known-failures.json` (a listed case
+   that now passes fails CI until removed), and commit.
 
 spec also carries old `wallet-v*` tags from before the Android wallet moved
 out. They're historical; wallet releases live in android-wallet.
