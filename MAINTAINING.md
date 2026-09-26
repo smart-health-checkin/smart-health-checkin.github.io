@@ -306,6 +306,9 @@ in both.
   dark. `--success`, `--warning`, `--danger`, `--info`, `--brand-bright`,
   and the spectrum colors (`--smart-red` …) are fills for dots, rules, and
   bars, the same in both modes; don't use them for text.
+- **Surfaces in dark:** `--bg-alt` is a step darker than `--bg` (a well)
+  and `--surface` a step lighter (raised), so a panel stands out on either
+  page background, as it does in light.
 - **Grays don't change:** `--gray-0` … `--gray-950` are fixed primitives. A
   page that takes a color from a gray stays light in dark mode.
 - **`--theme-*` is the palette itself.** The semantic tokens and the chrome
@@ -330,15 +333,18 @@ in both.
 Shared classes for the pieces that recur across sections. All are
 token-driven, so they work in both modes. Status modifiers are `ok`, `warn`,
 `bad`, and `info` (`success`, `warning`, and `danger` also work).
+The stylesheet also makes the `hidden` attribute always hide, whatever
+display a class sets, and turns off font ligatures in `code`, `pre`,
+`kbd`, and `samp`, so `=>` shows as typed.
 
 | Class | What it is |
 | --- | --- |
-| `.smart-btn` (`.primary`, `.ghost`, `.link`, `.sm`, `.mono`, `.block`) | Buttons |
-| `.smart-pill` + status | A short status label: "fulfilled", "declined" |
+| `.smart-btn` (`.primary`, `.ghost`, `.link`, `.sm`, `.mono`, `.block`) | Buttons. `.link.sm` is a compact link button, the height of the line |
+| `.smart-pill` + status | A short status label: "fulfilled", "declined". An `a.smart-pill` isn't underlined |
 | `.smart-chip` + status | A mono, uppercase label: "Online", "Draft" |
-| `.smart-callout` + status | A boxed note with a colored left rule; info by default. `.smart-callout-title` for a bold first line |
+| `.smart-callout` + status | A boxed note with a colored left rule; info by default. `.smart-callout-title` for a bold first line. Links in it are `--brand-ink` |
 | `.smart-note` (`.warn`, `.bad`, `.ok`) | A left rule and nothing else |
-| `.smart-table-wrap` > `table.smart-table` | A table that scrolls sideways inside its wrapper, with edge shadows when it overflows. On a card, set `--table-bg: var(--surface)` on the wrapper (automatic inside `.smart-panel` and `.smart-details`). `td.num` aligns right |
+| `.smart-table-wrap` > `table.smart-table` | A table that scrolls sideways inside its wrapper, with edge shadows when it overflows. On a card, set `--table-bg: var(--surface)` on the wrapper (automatic inside `.smart-panel`, `.smart-details`, a `.smart-prose` `details`, and a callout). Header cells keep the case they're written in. `td.num` and `th.num` align right, here and in `.smart-prose` tables |
 | `pre.smart-code` (`.short`, `.tall` cap the height) | A code block |
 | `code.smart-inline-code` | Inline code |
 | `dl.smart-fields` | Name/value rows; `dt`/`dd` pairs, optionally each pair in a `div`. One column below 46rem |
@@ -460,17 +466,17 @@ Shiki's JSON (classes `sj-k`, `sj-s`, `sj-n`, `sj-l`, `sj-p`, colored by
 
 ### Copy buttons
 
-`site-chrome.js` adds a copy button to the top-right corner of every
-`<pre>`, including ones a script adds or refills later. It copies the
-block's text, shows a check, and announces "Copied to clipboard" to screen
-readers. It appears on hover or keyboard focus, and always on touch
-screens.
+`site-chrome.js` adds a copy button to every `<pre>`, including ones a
+script adds or refills later. It sits at the right of a short strip above
+the first line, so it never covers code, and stays in view while the code
+scrolls sideways. It is always visible. It copies the block's text, shows a
+check, and announces "Copied to clipboard" to screen readers.
 
 - **Opt out** with `data-no-copy` on the `pre` or any ancestor (for
   example, a tool that has its own Copy button).
 - The pre isn't moved or wrapped, and its `textContent` and `innerText` are
-  unchanged: the button sits in a zero-height `span.smart-copy-slot` at the
-  start of the pre and holds only an icon. Code that sets the pre's
+  unchanged: the strip is a `span.smart-copy-slot` at the start of the pre
+  and holds only an icon. Code that sets the pre's
   `textContent` or `innerHTML` removes it, and the chrome puts it back.
 - Empty pres get no button until they have text.
 

@@ -551,10 +551,10 @@
 
   // ---------- Copy buttons on code blocks ----------------------------
   // Every <pre> gets a copy button, unless it or an ancestor has
-  // data-no-copy. The button sits in a zero-height sticky slot at the top
-  // of the pre (see .smart-copy-slot in smart-design.css): the pre isn't
-  // moved or wrapped, so frameworks that own it aren't disturbed, and its
-  // textContent is unchanged (the button holds only an icon). Pres added
+  // data-no-copy. The button sits in a short sticky strip above the first
+  // line (see .smart-copy-slot in smart-design.css), so it never covers
+  // code. The pre isn't moved or wrapped, so frameworks that own it aren't
+  // disturbed, and its textContent is unchanged (the button holds only an icon). Pres added
   // or refilled later, as the tools do, get one too.
   var CHECK_ICON = '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"'
     + ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 8.5l3.2 3L13 4.5"></path></svg>';

@@ -135,6 +135,14 @@
 
 ::selection { background: var(--brand); color: var(--on-brand); }
 
+/* The hidden attribute always hides, even on an element whose class sets a
+   display (.smart-tabs, .smart-callout, a flex row). */
+[hidden] { display: none !important; }
+
+/* Code shows exactly the characters it contains: no ligatures, so => and
+   != don't turn into arrows and signs. */
+code, kbd, samp, pre { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+
 /* ---------- Color: one palette, light and dark ------------------------
    --theme-* hold the palette's values for the current mode. They are set
    only here; page CSS never uses or overrides them. Page CSS uses the
@@ -191,16 +199,16 @@
   :root[data-theme="auto"] {
     color-scheme: dark;
     --theme-bg:            #11161D;
-    --theme-bg-alt:        #171D24;
-    --theme-surface:       #171D24;
-    --theme-surface-alt:   #1D252E;
+    --theme-bg-alt:        #0B0F14;  /* a well: a step below the page */
+    --theme-surface:       #1A2129;  /* raised: a step above the page */
+    --theme-surface-alt:   #212933;
     --theme-fg-1:          #E6EAEF;
     --theme-fg-2:          #B4BDC7;
     --theme-fg-3:          #9AA6B2;
     --theme-fg-mark:       #9AA6B2;
-    --theme-border:        #2A333E;
-    --theme-border-strong: #3A4553;
-    --theme-border-subtle: #222A33;
+    --theme-border:        #2E3844;
+    --theme-border-strong: #404C5B;
+    --theme-border-subtle: #262F3A;
     --theme-brand:         #7CBBEA;
     --theme-brand-ink:     #A6D2F2;
     --theme-brand-wash:    #16324A;
@@ -212,9 +220,9 @@
     --theme-bad:           #F28B82;  --theme-bad-wash:  #3D1C1A;  --theme-bad-border:  #74332E;
     --theme-info:          #7CBBEA;  --theme-info-wash: #16324A;  --theme-info-border: #2A5577;
 
-    --theme-code-bg:        #1D252E;
+    --theme-code-bg:        #0B0F14;
     --theme-code-fg:        #E6EAEF;
-    --theme-code-inline-bg: #262F3A;
+    --theme-code-inline-bg: #2A3440;
     --theme-syn-comment:    #9AA6B2;
     --theme-syn-keyword:    #79B8FF;
     --theme-syn-string:     #7DD3B8;
@@ -232,16 +240,16 @@
 :root[data-theme="dark"] {
   color-scheme: dark;
   --theme-bg:            #11161D;
-  --theme-bg-alt:        #171D24;
-  --theme-surface:       #171D24;
-  --theme-surface-alt:   #1D252E;
+  --theme-bg-alt:        #0B0F14;  /* a well: a step below the page */
+  --theme-surface:       #1A2129;  /* raised: a step above the page */
+  --theme-surface-alt:   #212933;
   --theme-fg-1:          #E6EAEF;
   --theme-fg-2:          #B4BDC7;
   --theme-fg-3:          #9AA6B2;
   --theme-fg-mark:       #9AA6B2;
-  --theme-border:        #2A333E;
-  --theme-border-strong: #3A4553;
-  --theme-border-subtle: #222A33;
+  --theme-border:        #2E3844;
+  --theme-border-strong: #404C5B;
+  --theme-border-subtle: #262F3A;
   --theme-brand:         #7CBBEA;
   --theme-brand-ink:     #A6D2F2;
   --theme-brand-wash:    #16324A;
@@ -253,9 +261,9 @@
   --theme-bad:           #F28B82;  --theme-bad-wash:  #3D1C1A;  --theme-bad-border:  #74332E;
   --theme-info:          #7CBBEA;  --theme-info-wash: #16324A;  --theme-info-border: #2A5577;
 
-  --theme-code-bg:        #1D252E;
+  --theme-code-bg:        #0B0F14;
   --theme-code-fg:        #E6EAEF;
-  --theme-code-inline-bg: #262F3A;
+  --theme-code-inline-bg: #2A3440;
   --theme-syn-comment:    #9AA6B2;
   --theme-syn-keyword:    #79B8FF;
   --theme-syn-string:     #7DD3B8;
@@ -1028,6 +1036,8 @@ html.smart-menu-open, html.smart-menu-open body { overflow: hidden; }
 
 .smart-btn.sm { font-size: var(--fs-xs); padding: 6px 10px; border-radius: var(--radius-sm); font-weight: 500; }
 .smart-btn.mono { font-family: var(--font-mono); font-weight: 400; }
+/* A compact link button: small type, no box, the height of the line. */
+.smart-btn.link.sm { padding: 0 2px; }
 
 /* --- surfaces --- */
 .smart-panel {
@@ -1118,6 +1128,8 @@ html.smart-menu-open, html.smart-menu-open body { overflow: hidden; }
 .smart-callout > :first-child { margin-top: 0; }
 .smart-callout > :last-child { margin-bottom: 0; }
 .smart-callout-title { display: block; margin-bottom: var(--space-1); font-weight: 700; }
+/* On a status wash, links take --brand-ink: --brand is under 4.5:1 there in light. */
+:is(.smart-callout, .smart-prose blockquote) a:not(.smart-btn, .smart-pill, .smart-chip) { color: var(--brand-ink); }
 
 /* --- table, and a wrapper that scrolls it sideways with edge shadows --- */
 .smart-table-wrap {
@@ -1131,7 +1143,8 @@ html.smart-menu-open, html.smart-menu-open body { overflow: hidden; }
     radial-gradient(farthest-side at 100% 50%, var(--shadow-edge), transparent) right center / 14px 100% no-repeat scroll;
 }
 /* On a card, the covers must match the card. */
-:is(.smart-panel, .smart-details) .smart-table-wrap { --table-bg: var(--surface); }
+:is(.smart-panel, .smart-details, .smart-prose details) .smart-table-wrap { --table-bg: var(--surface); }
+.smart-callout .smart-table-wrap { --table-bg: var(--_wash); }
 .smart-table-wrap > table { margin: 0; }
 .smart-table,
 .smart-prose table {
@@ -1150,14 +1163,12 @@ html.smart-menu-open, html.smart-menu-open body { overflow: hidden; }
 .smart-table thead th,
 .smart-prose table thead th {
   border-bottom-color: var(--border-strong);
-  color: var(--fg-3);
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  letter-spacing: var(--tracking-caps);
-  text-transform: uppercase;
+  color: var(--fg-2);
+  font-weight: 600;
   white-space: nowrap;
 }
-.smart-table td.num, .smart-table th.num { text-align: right; }
+.smart-table :is(td, th).num,
+.smart-prose table :is(td, th).num { text-align: right; }
 /* Identifiers in cells stay whole, so a wide table scrolls in its wrapper
    instead of breaking them mid-word. */
 .smart-table code,
@@ -1222,6 +1233,9 @@ pre.shiki.css-variables:focus-visible { outline: 2px solid var(--focus); outline
 .smart-pill.warn, .smart-pill.warning { --_fg: var(--status-warn); --_bg: var(--status-warn-wash); --_line: var(--status-warn-border); }
 .smart-pill.bad,  .smart-pill.danger  { --_fg: var(--status-bad);  --_bg: var(--status-bad-wash);  --_line: var(--status-bad-border); }
 .smart-pill.info                      { --_fg: var(--status-info); --_bg: var(--status-info-wash); --_line: var(--status-info-border); }
+/* A pill or chip that is a link (a result that opens its issue) isn't underlined. */
+a:is(.smart-pill, .smart-chip) { text-decoration: none; }
+a:is(.smart-pill, .smart-chip):hover { border-color: currentColor; }
 
 /* --- field list: <dl class="smart-fields"> of name/value rows --- */
 .smart-fields {
@@ -1329,46 +1343,49 @@ pre.shiki.css-variables:focus-visible { outline: 2px solid var(--focus); outline
 .smart-prose blockquote > :last-child { margin-bottom: 0; }
 
 /* --- copy button: site-chrome.js adds one to every <pre>, unless the pre
-   or an ancestor has data-no-copy. The slot is a zero-height sticky strip
-   at the top of the pre, so the button stays in the corner while the code
-   scrolls sideways, and the pre's text is unchanged. --- */
+   or an ancestor has data-no-copy. The button sits in a short strip at the
+   top of the block, above the first line, so it never covers code: the
+   strip is the pre's first child, a sticky block (it stays at the right
+   edge while the code scrolls sideways) that holds only an icon, so the
+   pre's text is unchanged. It is always visible, on every device. --- */
 .smart-copy-slot {
-  display: block;
+  display: flex;
+  justify-content: flex-end;
   position: sticky;
   left: 0;  /* sticks to the scroller's content edge, where it starts */
   z-index: 1;
-  height: 0;
+  height: 26px;
+  /* Pull the strip up into the pre's top padding and out to its right
+     padding, so the button sits 4px from the corner whatever the padding. */
+  margin: calc(4px - var(--_pt, 0px)) calc(4px - var(--_pr, 0px)) 4px 0;
   pointer-events: none;
   user-select: none;
   -webkit-user-select: none;
 }
 .smart-copy {
-  position: absolute;
-  top: calc(6px - var(--_pt, 0px));
-  right: calc(6px - var(--_pr, 0px));
   display: inline-flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px;
+  width: 26px; height: 26px;
   padding: 0;
-  border: 1px solid var(--border);
+  border: 1px solid transparent;
   border-radius: var(--radius-sm);
-  background: var(--surface);
-  color: var(--fg-2);
+  background: transparent;
+  color: var(--fg-3);
   cursor: pointer;
   pointer-events: auto;
-  opacity: 0;
-  transition: opacity var(--dur) var(--ease-out);
+  transition: color var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out);
 }
-.smart-copy svg { display: block; width: 16px; height: 16px; }
+/* A bigger target on touch screens, drawn the same size. */
+@media (pointer: coarse) {
+  .smart-copy { position: relative; }
+  .smart-copy::after { content: ""; position: absolute; inset: -9px; }
+}
+.smart-copy svg { display: block; width: 15px; height: 15px; }
 .smart-copy .smart-copy-done { display: none; }
 .smart-copy[data-copied] .smart-copy-idle { display: none; }
 .smart-copy[data-copied] .smart-copy-done { display: block; }
 .smart-copy[data-copied] { color: var(--status-ok); border-color: var(--status-ok-border); }
-.smart-copy:hover { color: var(--brand); border-color: var(--border-strong); }
+.smart-copy:hover { color: var(--brand); border-color: var(--border-strong); background: var(--surface); }
 .smart-copy:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
-pre:hover > .smart-copy-slot > .smart-copy,
-pre:focus-within > .smart-copy-slot > .smart-copy,
-.smart-copy[data-copied] { opacity: 1; }
-@media (hover: none) { .smart-copy { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .smart-copy { transition: none; } }
 .smart-sr {
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
