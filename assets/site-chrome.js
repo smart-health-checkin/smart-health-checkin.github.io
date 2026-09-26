@@ -59,6 +59,7 @@
       label: 'Demos', href: '/client/demo/', match: /^\/client\/demo\//, llms: '/client/',
       items: [
         { href: '/client/demo/', label: 'Clinic check-in' },
+        { href: '/client/demo/tutorial.html', label: 'Tutorial page', note: 'The tutorial, finished' },
         { href: '/client/demo/kiosk.html', label: 'Kiosk check-in', note: 'Hand off to the phone' },
         { href: '/client/demo/autofill.html#wallet=demo', label: 'Allergy autofill' },
         { href: '/client/demo/react.html', label: 'React example' },
@@ -73,7 +74,7 @@
         { href: '/connectathon/directory.html', label: 'Directory', note: 'Who is testing what' },
         { href: '/connectathon/results.html', label: 'Results' },
         { href: '/connectathon/requests/', label: 'Requests' },
-        { href: '/connectathon/web-wallet-handoff.html', label: 'Web wallet hand-off' }
+        { href: '/client/docs/web-wallet-handoff.html', label: 'Web wallet hand-off' }
       ]
     }
   ];
