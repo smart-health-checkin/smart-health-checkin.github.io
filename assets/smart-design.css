@@ -161,8 +161,10 @@
    The bar, menus, phone panel, breadcrumb, tool bar, and footer take their
    colors from these tokens and follow the reader's color scheme. Page
    content keeps its own colors: the chrome maps these onto --surface,
-   --fg-1, etc. only inside its own elements. A page can force a scheme with
-   <html data-theme="light"> or <html data-theme="dark">. */
+   --fg-1, etc. only inside its own elements.
+   The chrome is light unless the page says its own content has a dark mode:
+   <html data-theme="auto"> follows the reader's scheme, <html data-theme="dark">
+   forces dark. Without it, a dark bar would sit over a light page. */
 :root {
   --chrome-bar-bg:       rgba(255, 255, 255, 0.97);
   --chrome-surface:      #FFFFFF;
@@ -185,7 +187,7 @@
   --chrome-crumb-bg:     transparent;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root[data-theme="auto"] {
     --chrome-bar-bg:       rgba(23, 29, 36, 0.97);
     --chrome-surface:      #171D24;
     --chrome-surface-alt:  #1D252E;
