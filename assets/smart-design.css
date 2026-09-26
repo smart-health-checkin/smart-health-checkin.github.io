@@ -157,6 +157,101 @@
 
 ::selection { background: var(--brand); color: #fff; }
 
+/* ---------- Chrome colors, light and dark --------------------------
+   The bar, menus, phone panel, breadcrumb, tool bar, and footer take their
+   colors from these tokens and follow the reader's color scheme. Page
+   content keeps its own colors: the chrome maps these onto --surface,
+   --fg-1, etc. only inside its own elements. A page can force a scheme with
+   <html data-theme="light"> or <html data-theme="dark">. */
+:root {
+  --chrome-bar-bg:       rgba(255, 255, 255, 0.97);
+  --chrome-surface:      #FFFFFF;
+  --chrome-surface-alt:  #F6F8FA;
+  --chrome-fg-1:         #1F2933;
+  --chrome-fg-2:         #4B5563;
+  --chrome-fg-3:         #5B6675;
+  --chrome-border:       #E4E7EB;
+  --chrome-border-strong:#CBD2D9;
+  --chrome-accent:       #0E6FB8;
+  --chrome-accent-ink:   #094D80;
+  --chrome-accent-wash:  #D6EAF7;
+  --chrome-on-accent:    #FFFFFF;
+  --chrome-focus:        #0E6FB8;
+  --chrome-shadow:       0 2px 4px rgba(17, 22, 29, 0.06), 0 4px 8px rgba(17, 22, 29, 0.06);
+  /* The logo's purple petal (#722772) is lifted in dark to #A04CA0, 3.3:1
+     on the dark bar (the original is 1.8:1); the other petals are unchanged. */
+  --smart-logo-purple:   #722772;
+  --chrome-scheme:       light;
+  --chrome-crumb-bg:     transparent;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --chrome-bar-bg:       rgba(23, 29, 36, 0.97);
+    --chrome-surface:      #171D24;
+    --chrome-surface-alt:  #1D252E;
+    --chrome-fg-1:         #E6EAEF;
+    --chrome-fg-2:         #B4BDC7;
+    --chrome-fg-3:         #9AA6B2;
+    --chrome-border:       #2A333E;
+    --chrome-border-strong:#3A4553;
+    --chrome-accent:       #7CBBEA;
+    --chrome-accent-ink:   #A6D2F2;
+    --chrome-accent-wash:  #16324A;
+    --chrome-on-accent:    #0E1318;
+    --chrome-focus:        #7CBBEA;
+    --chrome-shadow:       0 2px 4px rgba(0, 0, 0, 0.3), 0 8px 16px rgba(0, 0, 0, 0.35);
+    --smart-logo-purple:   #A04CA0;
+    --chrome-scheme:       dark;
+    --chrome-crumb-bg:     #11161D;
+  }
+}
+:root[data-theme="dark"] {
+  --chrome-bar-bg:       rgba(23, 29, 36, 0.97);
+  --chrome-surface:      #171D24;
+  --chrome-surface-alt:  #1D252E;
+  --chrome-fg-1:         #E6EAEF;
+  --chrome-fg-2:         #B4BDC7;
+  --chrome-fg-3:         #9AA6B2;
+  --chrome-border:       #2A333E;
+  --chrome-border-strong:#3A4553;
+  --chrome-accent:       #7CBBEA;
+  --chrome-accent-ink:   #A6D2F2;
+  --chrome-accent-wash:  #16324A;
+  --chrome-on-accent:    #0E1318;
+  --chrome-focus:        #7CBBEA;
+  --chrome-shadow:       0 2px 4px rgba(0, 0, 0, 0.3), 0 8px 16px rgba(0, 0, 0, 0.35);
+  --smart-logo-purple:   #A04CA0;
+  --chrome-scheme:       dark;
+  --chrome-crumb-bg:     #11161D;
+}
+/* Inside the chrome, the page tokens become the chrome's. */
+.smart-skip,
+.smart-topbar,
+.smart-menu-panel,
+.smart-breadcrumb,
+.smart-footer {
+  --bg:            var(--chrome-surface);
+  --bg-alt:        var(--chrome-surface-alt);
+  --surface:       var(--chrome-surface);
+  --surface-alt:   var(--chrome-surface-alt);
+  --gray-50:       var(--chrome-surface-alt);
+  --fg-1:          var(--chrome-fg-1);
+  --fg-2:          var(--chrome-fg-2);
+  --fg-3:          var(--chrome-fg-3);
+  --fg-mark:       var(--chrome-fg-2);
+  --border:        var(--chrome-border);
+  --border-strong: var(--chrome-border-strong);
+  --brand:         var(--chrome-accent);
+  --brand-ink:     var(--chrome-accent-ink);
+  --brand-wash:    var(--chrome-accent-wash);
+  --shadow-md:     var(--chrome-shadow);
+  --shadow-focus:  0 0 0 3px var(--chrome-focus);
+  color-scheme: var(--chrome-scheme);
+}
+.smart-topbar .smart-btn.primary,
+.smart-topbar .smart-btn.primary:hover { color: var(--chrome-on-accent); }
+.smart-mark-link svg .smart-logo-purple { fill: var(--smart-logo-purple); }
+
 /* ---------- Spectrum stripe — the brand signature ------------------- */
 .smart-spectrum {
   display: grid;
@@ -229,7 +324,7 @@
   z-index: 60;
   height: var(--smart-bar-h);
   box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.97);
+  background: var(--chrome-bar-bg);
   backdrop-filter: saturate(180%) blur(8px);
   -webkit-backdrop-filter: saturate(180%) blur(8px);
   border-bottom: 1px solid var(--border);
@@ -254,7 +349,7 @@
 .smart-menu-panel :focus-visible,
 .smart-breadcrumb :focus-visible,
 .smart-footer :focus-visible {
-  outline: 2px solid var(--brand);
+  outline: 2px solid var(--chrome-focus);
   outline-offset: 2px;
 }
 .smart-mark-link {
@@ -586,6 +681,9 @@ html.smart-menu-open, html.smart-menu-open body { overflow: hidden; }
   color: var(--fg-3);
 }
 .smart-breadcrumb[hidden] { display: none; }
+/* In dark the breadcrumb sits on a full-width band, since the page under it
+   may be light. */
+.smart-breadcrumb { background: var(--chrome-crumb-bg); box-shadow: 0 0 0 100vmax var(--chrome-crumb-bg); clip-path: inset(0 -100vmax); }
 .smart-breadcrumb ol {
   display: flex;
   flex-wrap: wrap;

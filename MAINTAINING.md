@@ -164,6 +164,14 @@ Not versioned. Push to `main` and they deploy.
   back to local fonts sized to match Inter at each weight, so the swap doesn't reflow text.
   The two `preconnect` lines let the fonts start sooner. Widths set in `ch`
   still change a little when Inter arrives; prefer `rem` for layout widths.
+- **Dark mode:** the bar, menus, phone panel, breadcrumb, tool bar, and
+  footer follow `prefers-color-scheme`. Their colors are the `--chrome-*`
+  tokens in `smart-design.css`; inside the chrome they stand in for
+  `--surface`, `--fg-1`, `--brand` and the rest, so page content keeps its
+  own colors (most section pages are light-only today). A page can force a
+  scheme with `<html data-theme="light">` or `data-theme="dark"`. In dark the
+  logo's purple petal is `#A04CA0` (`--smart-logo-purple`) instead of
+  `#722772`, which is too dark on the dark bar.
 
 ### The bar
 
