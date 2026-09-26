@@ -161,7 +161,7 @@ Not versioned. Push to `main` and they deploy.
   properties from a global `header {…}` or `nav {…}` rule still leak in.
 - **Fonts:** `smart-design.css` loads Inter, Source Serif 4, and JetBrains
   Mono from Google Fonts with `font-display: swap`, and `--font-sans` falls
-  back to a local font sized to match Inter, so the swap doesn't reflow text.
+  back to local fonts sized to match Inter at each weight, so the swap doesn't reflow text.
   The two `preconnect` lines let the fonts start sooner. Widths set in `ch`
   still change a little when Inter arrives; prefer `rem` for layout widths.
 

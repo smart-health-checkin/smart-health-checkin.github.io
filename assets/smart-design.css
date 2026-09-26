@@ -11,20 +11,38 @@
 @font-face {
   font-family: 'Inter Fallback';
   src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('LiberationSans'), local('Helvetica');
-  ascent-override: 90.2%;
-  descent-override: 22.5%;
+  ascent-override: 90.96%;
+  descent-override: 22.68%;
   line-gap-override: 0%;
-  size-adjust: 107.6%;
-  font-weight: 100 500;
+  size-adjust: 106.7%;
+  font-weight: 100 400;
+}
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('LiberationSans'), local('Helvetica');
+  ascent-override: 90.03%;
+  descent-override: 22.45%;
+  line-gap-override: 0%;
+  size-adjust: 107.8%;
+  font-weight: 500;
 }
 @font-face {
   font-family: 'Inter Fallback';
   src: local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('LiberationSans-Bold'), local('Helvetica Bold');
-  ascent-override: 94.6%;
-  descent-override: 23.6%;
+  ascent-override: 95.62%;
+  descent-override: 23.84%;
+  line-gap-override: 0%;
+  size-adjust: 101.5%;
+  font-weight: 600;
+}
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('LiberationSans-Bold'), local('Helvetica Bold');
+  ascent-override: 94.59%;
+  descent-override: 23.59%;
   line-gap-override: 0%;
   size-adjust: 102.6%;
-  font-weight: 600 900;
+  font-weight: 700 900;
 }
 
 :root {
@@ -504,7 +522,9 @@ html.smart-menu-open, html.smart-menu-open body { overflow: hidden; }
 /* ---------- The tool bar ---------------------------------------------
    <div data-smart-topbar="tool">: logo, a back link, the tool's name, and
    the tool's own actions. Same height as the site bar; never hides. */
-.smart-topbar[data-mode="tool"] .smart-mark-link { min-width: 44px; justify-content: center; }
+/* The logo sits exactly where it does in the site bar (left-aligned in
+   its 44px tap target), and the back label matches the menu text. */
+.smart-topbar[data-mode="tool"] .smart-mark-link { min-width: 44px; justify-content: flex-start; }
 .smart-tool-back {
   display: inline-flex;
   align-items: center;
@@ -520,7 +540,8 @@ html.smart-menu-open, html.smart-menu-open body { overflow: hidden; }
   flex-shrink: 0;
 }
 .smart-tool-back:hover { background: var(--brand-wash); color: var(--brand-ink); }
-.smart-tool-back span { font-size: 18px; line-height: 1; }
+.smart-tool-back > span[aria-hidden] { font-size: 18px; line-height: 1; }
+.smart-tool-back-label { font-size: inherit; }
 .smart-tool-title {
   min-width: 0;
   flex: 1 1 auto;
@@ -680,6 +701,8 @@ html.smart-menu-open, html.smart-menu-open body { overflow: hidden; }
   border-top: 1px solid var(--border); display: flex; gap: var(--space-4); font-size: var(--fs-sm); color: var(--fg-3);
 }
 .smart-footer .smart-footer-fine .spacer { margin-left: auto; }
+/* Inside the site map the container already has the side padding. */
+.site-foot-inner .smart-footer-fine { padding-left: 0; padding-right: 0; }
 
 /* A demo page closes with the same spectrum rule as the site footer, but
    without the site map: one line of context under the app. */
