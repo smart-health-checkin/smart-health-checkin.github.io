@@ -6,6 +6,8 @@
 <title>SMART Health Check-in</title>
 <meta name="description" content="An open protocol for pre-visit check-in: a provider's page asks the patient's health app for what the visit needs over the W3C Digital Credentials API, and the verified answer comes back to that same page.">
 <link rel="alternate" type="text/markdown" href="/llms.txt">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="/assets/smart-design.css">
 <script src="/assets/site-chrome.js" defer></script>
 <style>
@@ -28,6 +30,16 @@
   .eyebrow { margin: 0 0 var(--space-4); font-size: var(--fs-xs); font-weight: 700; letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--brand); }
   .lede { font-family: var(--font-serif); font-size: var(--fs-md); color: var(--fg-2); margin: var(--space-5) 0 0; line-height: 1.55; max-width: 48ch; }
   .hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-6); }
+
+  /* --- who are you: one entry point per kind of visitor --- */
+  .roles { margin: var(--space-6) 0 0; }
+  .roles h2 { font-size: var(--fs-md); margin: 0 0 var(--space-3); }
+  .role-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+  .role-cards a { display: flex; flex-direction: column; gap: 4px; height: 100%; min-height: 44px; padding: var(--space-3) var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); color: var(--fg-1); text-decoration: none; }
+  .role-cards a:hover { border-color: var(--brand); box-shadow: var(--shadow-sm); }
+  .role-cards a:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+  .role-cards b { font-weight: 700; color: var(--brand-ink); }
+  .role-cards span { font-size: var(--fs-sm); color: var(--fg-2); }
 
   /* --- the exchange: request, the person's choices, response --- */
   .flow { margin: var(--space-8) 0 0; }
@@ -81,6 +93,7 @@
 
 <div data-smart-topbar></div>
 
+<main id="main">
 <div class="hero">
   <div class="page">
     <p class="eyebrow">Open protocol · draft 1.0</p>
@@ -89,6 +102,18 @@
       A provider's page asks the patient's health app for what the visit
       needs, and the verified answer comes back to that same page.
     </p>
+
+    <section class="roles" aria-labelledby="roles-h">
+      <h2 id="roles-h">Who are you?</h2>
+      <ul class="role-cards">
+        <li><a href="/connectathon/patients.html"><b>Patient or caregiver</b><span>Try a new way to check in for a visit, and tell us how it feels.</span></a></li>
+        <li><a href="/connectathon/clinic-staff.html"><b>Clinic staff</b><span>See how check-in could work at your front desk.</span></a></li>
+        <li><a href="/connectathon/verifier-developers.html"><b>Building an EHR or portal</b><span>The clinic side: ask a patient's app for records and forms.</span></a></li>
+        <li><a href="/connectathon/wallet-developers.html"><b>Building a wallet</b><span>A health app on a phone, or a web wallet in a browser tab.</span></a></li>
+        <li><a href="/connectathon/observers.html"><b>Just curious</b><span>Policy, standards, payers, research: follow along.</span></a></li>
+      </ul>
+    </section>
+
     <div class="hero-actions">
       <a class="smart-btn primary" href="/client/demo/">Run the demo</a>
       <a class="smart-btn" href="/spec/">Read the spec</a>
@@ -184,7 +209,7 @@
     </div>
   </div>
 </section>
-
+</main>
 
 <div data-smart-footer></div>
 

@@ -6,6 +6,27 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
+/* Text shows at once in a local font sized to match Inter, then swaps to
+   Inter when it arrives without reflowing the page (no layout shift). */
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('LiberationSans'), local('Helvetica');
+  ascent-override: 90.2%;
+  descent-override: 22.5%;
+  line-gap-override: 0%;
+  size-adjust: 107.6%;
+  font-weight: 100 500;
+}
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('LiberationSans-Bold'), local('Helvetica Bold');
+  ascent-override: 94.6%;
+  descent-override: 23.6%;
+  line-gap-override: 0%;
+  size-adjust: 102.6%;
+  font-weight: 600 900;
+}
+
 :root {
   /* SMART spectrum — the 6-petal palette (categorical only) */
   --smart-red:    #E5443B;
@@ -43,7 +64,7 @@
   --surface-alt:  var(--gray-50);
   --fg-1:         var(--gray-900);
   --fg-2:         var(--gray-700);
-  --fg-3:         var(--gray-500);
+  --fg-3:         #5B6675;  /* 4.7:1 or better on every surface, incl. brand-wash */
   --fg-mark:      var(--gray-600);
   --border:        var(--gray-200);
   --border-strong: var(--gray-300);
@@ -56,7 +77,7 @@
   --info:         #3DA9DC;  --info-wash:    #E8F4FB;
 
   /* Type */
-  --font-sans:  'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-sans:  'Inter', 'Inter Fallback', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-serif: 'Source Serif 4', 'Source Serif Pro', Georgia, 'Times New Roman', serif;
   --font-mono:  'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
@@ -135,250 +156,434 @@
 .smart-spectrum > i:nth-child(5) { background: var(--smart-blue); }
 .smart-spectrum > i:nth-child(6) { background: var(--smart-purple); }
 
-/* ---------- Sticky topbar with mark + crumbs ------------------------ */
+/* ---------- The site bar -------------------------------------------
+   site-chrome.js replaces <div data-smart-topbar> with a skip link, the
+   spectrum stripe, and <header class="smart-topbar">. Heights are fixed so
+   the placeholder can reserve the same space before the script runs (no
+   layout shift): 3px stripe + 56px bar on desktop, 3px + 52px below 64rem.
+   The bar resets margins, padding, and borders on its own header and nav so
+   page CSS that styles `header` or `nav` can't reshape it. */
+:root {
+  --smart-bar-h: 56px;
+  --smart-stripe-h: 3px;
+}
+@media (max-width: 63.99rem) {
+  :root { --smart-bar-h: 52px; }
+}
+[data-smart-topbar] {
+  display: block;
+  min-height: calc(var(--smart-bar-h) + var(--smart-stripe-h));
+}
+[data-smart-breadcrumb]:empty:not([hidden]) {
+  display: block;
+  min-height: 40px;
+}
+
+.smart-skip {
+  position: absolute;
+  left: 8px;
+  top: -100px;
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--surface);
+  color: var(--brand-ink);
+  font-weight: 600;
+  border: 2px solid var(--brand);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+}
+.smart-skip:focus { top: 8px; }
+
+.smart-topbar,
+.smart-topbar nav {
+  margin: 0;
+  padding: 0;
+  max-width: none;
+  border: 0;
+  box-shadow: none;
+  background: none;
+  width: auto;
+}
 .smart-topbar {
+  display: block;
   position: sticky;
   top: 0;
   z-index: 60;
-  background: rgba(255, 255, 255, 0.96);
+  height: var(--smart-bar-h);
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.97);
   backdrop-filter: saturate(180%) blur(8px);
   -webkit-backdrop-filter: saturate(180%) blur(8px);
   border-bottom: 1px solid var(--border);
+  font-family: var(--font-sans);
+  line-height: 1.35;
+  transition: transform 180ms var(--ease-out);
 }
+.smart-topbar.smart-topbar-hidden { transform: translateY(-100%); }
 .smart-topbar-inner {
   max-width: var(--container-wide);
+  height: 100%;
   margin: 0 auto;
-  padding: 12px 24px;
+  padding: 0 24px;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
+  gap: 16px;
+  flex-wrap: nowrap;
   font-size: var(--fs-sm);
+}
+.smart-topbar :focus-visible,
+.smart-menu-panel :focus-visible,
+.smart-breadcrumb :focus-visible,
+.smart-footer :focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
 }
 .smart-mark-link {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  min-height: 44px;
   text-decoration: none;
   border-bottom: 0;
   color: var(--fg-1);
   flex-shrink: 0;
+  border-radius: var(--radius-sm);
 }
 .smart-mark-link:hover { color: var(--fg-1); }
-.smart-mark-link svg { display: block; }
-.smart-mark-link .smart-mark-text {
-  display: inline-flex;
-  flex-direction: column;
-  line-height: 1.05;
-}
-.smart-mark-link .smart-mark-eyebrow {
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: var(--tracking-caps);
-  text-transform: uppercase;
-  color: var(--fg-mark);
-}
+.smart-mark-link svg { display: block; flex-shrink: 0; }
 .smart-mark-link .smart-mark-title {
   font-size: 14px;
   font-weight: 700;
   color: var(--fg-1);
   letter-spacing: -0.005em;
-  margin-top: 2px;
+  white-space: nowrap;
 }
+/* The current section's name, shown next to the logo below 64rem. */
+.smart-phone-section { display: none; }
+
 .smart-topbar-nav {
   display: flex;
-  flex-wrap: wrap;
-  gap: 4px 6px;
+  flex-wrap: nowrap;
+  gap: 4px;
   align-items: center;
-  margin-left: auto;
+  margin-left: auto !important;
 }
-.smart-topbar-nav a {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 11px;
-  border-radius: var(--radius-sm);
-  border-bottom: 0;
-  color: var(--fg-2);
-  font-weight: 600;
-  font-size: 13.5px;
-  text-decoration: none;
-  transition: color var(--dur) var(--ease-out), background var(--dur) var(--ease-out);
-}
-.smart-topbar-nav a:hover {
-  color: var(--brand-ink);
-  background: var(--brand-wash);
-}
-.smart-topbar-nav a[aria-current="page"] {
-  color: var(--brand-ink);
-  background: var(--brand-wash);
-}
-.smart-topbar-nav .sep {
-  width: 1px;
-  height: 18px;
-  background: var(--border);
-  margin: 0 4px;
-}
-
-/* ---------- Topbar dropdown ---------------------------------------- */
-.smart-topbar-nav .dropdown {
-  position: relative;
-}
+.smart-topbar-nav .smart-section-link,
 .smart-topbar-nav .dropdown-trigger {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 7px 11px;
+  min-height: 40px;
+  padding: 0 12px;
   border: 0;
+  border-radius: var(--radius-sm);
   background: transparent;
+  color: var(--fg-2);
   font: inherit;
   font-weight: 600;
-  font-size: 13.5px;
-  color: var(--fg-2);
-  border-radius: var(--radius-sm);
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
   cursor: pointer;
   transition: color var(--dur) var(--ease-out), background var(--dur) var(--ease-out);
 }
-.smart-topbar-nav .dropdown-trigger:hover {
-  color: var(--brand-ink);
-  background: var(--brand-wash);
-}
+.smart-topbar-nav .smart-section-link:hover,
+.smart-topbar-nav .dropdown-trigger:hover,
+.smart-topbar-nav .smart-section-link[aria-current],
 .smart-topbar-nav .dropdown[data-active="true"] > .dropdown-trigger {
   color: var(--brand-ink);
   background: var(--brand-wash);
 }
-.smart-topbar-nav .dropdown .dd-caret {
-  transition: transform var(--dur) var(--ease-out);
-}
-.smart-topbar-nav .dropdown[data-open="true"] .dd-caret {
-  transform: rotate(180deg);
-}
+.smart-topbar-nav .dd-caret-space { display: inline-block; width: 10px; }
+.smart-topbar-nav .smart-more > .dropdown-trigger { padding: 0 10px; min-width: 40px; justify-content: center; }
+.smart-topbar-nav .dropdown { position: relative; }
+.smart-topbar .dd-caret { transition: transform var(--dur) var(--ease-out); }
+.smart-topbar-nav .dropdown[data-open="true"] .dd-caret { transform: rotate(180deg); }
+
+/* A section's menu. It never scrolls inside: a long menu uses two columns. */
 .smart-topbar-nav .dropdown-menu {
-  display: none;
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 8px);
   left: 0;
-  min-width: 280px;
+  width: 300px;
   max-width: calc(100vw - 16px);
   padding: 6px;
+  box-sizing: border-box;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
   z-index: 70;
 }
-.smart-topbar-nav .dropdown[data-open="true"] > .dropdown-menu {
-  display: block;
-}
-.smart-topbar-nav .dropdown-menu a {
-  display: block;
-  padding: 8px 10px;
-  border-radius: var(--radius-sm);
-  border-bottom: 0;
-  color: var(--fg-1);
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 13.5px;
-  line-height: 1.35;
-  transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out);
-}
-.smart-topbar-nav .dropdown-menu a:hover {
-  background: var(--bg-alt);
-  color: var(--brand-ink);
-  border-bottom: 0;
-}
-.smart-topbar-nav .dropdown-menu a[aria-current="page"] {
-  background: var(--brand-wash);
-  color: var(--brand-ink);
-}
-.smart-topbar-nav .dropdown-menu .dd-label {
-  display: block;
-  font-weight: 600;
-}
-.smart-topbar-nav .dropdown-menu .dd-note {
-  display: block;
-  margin-top: 2px;
-  font-size: 12px;
-  color: var(--fg-3);
-  font-weight: 400;
-}
-/* A group: a labeled set of links inside the same menu (menus never fly out). */
-.smart-topbar-nav .dropdown-menu .dd-group + .dd-group,
-.smart-topbar-nav .dropdown-menu a + .dd-group,
-.smart-topbar-nav .dropdown-menu .dd-group + a {
+.smart-topbar-nav .dropdown-menu[hidden] { display: none; }
+.smart-topbar-nav .dropdown-menu.dd-right { left: auto; right: 0; }
+.smart-topbar-nav .dropdown-menu.dd-wide { width: 580px; }
+.smart-topbar-nav .dd-wide .dd-body { column-count: 2; column-gap: 6px; }
+
+/* Menu contents, shared by the desktop menus and the phone panel. */
+.dd-body .dd-block { break-inside: avoid; }
+.dd-body .dd-group + .dd-block,
+.dd-body .dd-block + .dd-group {
   margin-top: 6px;
   padding-top: 6px;
   border-top: 1px solid var(--border);
 }
-.smart-topbar-nav .dropdown-menu .dd-group-label {
-  padding: 4px 10px 2px;
+.dd-wide .dd-body .dd-block { display: inline-block; width: 100%; }  /* column break control */
+.dd-wide .dd-body .dd-group + .dd-block,
+.dd-wide .dd-body .dd-block + .dd-group { border-top: 0; margin-top: 0; padding-top: 4px; }
+.dd-body .dd-group-label {
+  padding: 8px 10px 2px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fg-3);
 }
-.smart-topbar-nav .dropdown-menu a:hover .dd-note,
-.smart-topbar-nav .dropdown-menu a[aria-current="page"] .dd-note {
-  color: var(--brand-ink);
-  opacity: 0.7;
-}
-
-@media (max-width: 720px) {
-  .smart-topbar-nav .dropdown-menu {
-    left: auto;
-    right: 0;
-    min-width: 240px;
-  }
-}
-/* Long menus scroll inside the dropdown instead of running off the screen. */
-.smart-topbar-nav .dropdown-menu {
-  max-height: calc(100vh - 140px);
-  overflow-y: auto;
-}
-
-/* ---------- LLM-friendly docs bundle widget (in topbar) ------------- */
-.llm-widget {
-  display: inline-flex;
-  align-items: stretch;
+.dd-body a,
+.dd-body .dd-action {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: 0;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  margin-left: 4px;
-  overflow: visible;
+  background: transparent;
+  color: var(--fg-1);
+  font: inherit;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.35;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out);
 }
-.llm-widget .llm-primary {
+.dd-body .dd-action { display: flex; gap: 8px; align-items: flex-start; }
+.dd-body .dd-action svg { margin-top: 3px; flex-shrink: 0; }
+.dd-body a:hover,
+.dd-body .dd-action:hover { background: var(--bg-alt); color: var(--brand-ink); }
+.dd-body a[aria-current="page"] { background: var(--brand-wash); color: var(--brand-ink); }
+.dd-body .dd-label { display: block; font-weight: 600; }
+.dd-body .dd-note {
+  display: block;
+  margin-top: 2px;
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--fg-3);
+}
+.dd-body a:hover .dd-note,
+.dd-body a[aria-current="page"] .dd-note { color: var(--brand-ink); }
+
+/* ---------- The phone and tablet bar (below 64rem) ------------------
+   One row: logo, the current section's name, and a Menu button that opens
+   a full-screen panel. Sections in the panel expand in place. */
+.smart-menu-btn {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  min-width: 44px;
+  margin-left: auto;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--fg-1);
+  font: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+.smart-menu-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  font-family: var(--font-sans);
+  line-height: 1.35;
+}
+.smart-menu-panel[hidden] { display: none; }
+html.smart-menu-open, html.smart-menu-open body { overflow: hidden; }
+.smart-menu-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.smart-menu-close {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 11px;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--fg-1);
+  cursor: pointer;
+}
+.smart-menu-panel-nav {
+  display: block;
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px 16px 32px !important;
+}
+.smart-panel-section { border-bottom: 1px solid var(--border); }
+.smart-panel-toggle {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  padding: 0 4px;
   border: 0;
   background: transparent;
+  color: var(--fg-1);
   font: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--fg-2);
+  font-size: 17px;
+  font-weight: 700;
+  text-align: left;
   cursor: pointer;
-  white-space: nowrap;
-  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
 }
-.llm-widget .llm-primary:hover {
-  background: var(--bg-alt);
-  color: var(--brand-ink);
+.smart-panel-toggle .dd-caret { width: 14px; height: 14px; transition: transform var(--dur) var(--ease-out); }
+.smart-panel-toggle[aria-expanded="true"] .dd-caret { transform: rotate(180deg); }
+.smart-panel-body { padding: 0 0 12px; }
+.smart-panel-body[hidden] { display: none; }
+.smart-menu-panel .dd-body a,
+.smart-menu-panel .dd-body .dd-action { min-height: 44px; font-size: 15px; }
+.smart-panel-body,
+.smart-panel-extra { display: block; }
+.smart-panel-extra { padding-top: 12px; }
+
+@media (max-width: 63.99rem) {
+  .smart-topbar-inner { padding: 0 16px; gap: 10px; }
+  .smart-topbar-nav { display: none; }
+  .smart-topbar[data-mode="site"] .smart-mark-link .smart-mark-title { display: none; }
+  .smart-topbar[data-mode="site"] .smart-mark-link::after {
+    content: "SMART Health Check-in";
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .smart-phone-section {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    min-width: 0;
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--fg-2);
+    font-weight: 600;
+    font-size: 14px;
+    padding-left: 10px;
+    border-left: 1px solid var(--border);
+  }
+  .smart-menu-btn { display: inline-flex; }
 }
-.llm-widget .llm-primary svg { width: 14px; height: 14px; }
-.llm-widget .llm-secondary {
-  border-left: 1px solid var(--border);
+@media (max-width: 46rem) {
+  /* On a phone the bar names where you are: the section (a link to its
+     front page), or the site's short title outside any section. */
+  .smart-topbar[data-mode="site"] .smart-mark-link::after { content: "SMART Check-in"; }
+  .smart-topbar[data-has-section] .smart-mark-link::after { content: none; }
+  .smart-topbar[data-has-section] .smart-mark-link { min-width: 44px; }
+  .smart-topbar[data-has-section] .smart-phone-section { min-width: 44px; border-left: 0; padding-left: 0; color: var(--fg-1); font-weight: 700; font-size: 15px; }
 }
-.llm-widget .llm-secondary .dropdown-trigger {
-  padding: 6px 8px;
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+@media (prefers-reduced-motion: reduce) {
+  .smart-topbar, .smart-topbar .dd-caret, .smart-panel-toggle .dd-caret { transition: none; }
+}
+
+/* ---------- The tool bar ---------------------------------------------
+   <div data-smart-topbar="tool">: logo, a back link, the tool's name, and
+   the tool's own actions. Same height as the site bar; never hides. */
+.smart-topbar[data-mode="tool"] .smart-mark-link { min-width: 44px; justify-content: center; }
+.smart-tool-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
   color: var(--fg-2);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
-.llm-widget .llm-secondary .dropdown-menu {
-  left: auto;
-  right: 0;
-  min-width: 220px;
+.smart-tool-back:hover { background: var(--brand-wash); color: var(--brand-ink); }
+.smart-tool-back span { font-size: 18px; line-height: 1; }
+.smart-tool-title {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-left: 12px;
+  border-left: 1px solid var(--border);
+  color: var(--fg-1);
+  font-weight: 700;
+  font-size: 15px;
+}
+.smart-tool-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.smart-tool-actions .smart-btn { min-height: 40px; white-space: nowrap; }
+@media (max-width: 46rem) {
+  /* The title gets the room: the back link shrinks to its arrow. */
+  .smart-tool-back { min-width: 44px; justify-content: center; padding: 0 6px; }
+  .smart-tool-back-label { display: none; }
+  .smart-tool-title { padding-left: 8px; font-size: 14px; }
+  .smart-tool-actions .smart-btn { min-height: 44px; }
+}
+
+/* ---------- Breadcrumb: <nav data-smart-breadcrumb> ----------------- */
+.smart-breadcrumb {
+  display: block;
+  max-width: var(--container-wide);
+  min-height: 40px;
+  margin: 0 auto;
+  padding: 10px 24px 0;
+  box-sizing: border-box;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--fg-3);
+}
+.smart-breadcrumb[hidden] { display: none; }
+.smart-breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.smart-breadcrumb li { display: inline-flex; align-items: center; margin: 0; padding: 0; }
+.smart-breadcrumb li + li::before {
+  content: "›";
+  margin: 0 8px;
+  color: var(--fg-3);
+}
+.smart-breadcrumb a { color: var(--brand-ink); text-decoration: none; font-weight: 600; }
+.smart-breadcrumb a:hover { text-decoration: underline; }
+.smart-breadcrumb [aria-current="page"] { color: var(--fg-2); }
+@media (max-width: 46rem) {
+  .smart-breadcrumb { padding: 8px 16px 0; }
 }
 
 /* ---------- Footer with spectrum top stripe ------------------------- */
@@ -450,8 +655,6 @@
 .smart-footer-fine .spacer { flex: 1; }
 
 @media (max-width: 720px) {
-  .smart-topbar-inner { padding: 10px 18px; gap: 12px; }
-  .smart-topbar-nav { width: 100%; margin-left: 0; }
   .smart-footer-inner { flex-direction: column; }
   .smart-footer-links { justify-content: flex-start; }
 }
@@ -462,12 +665,15 @@
    --------------------------------------------------------------------- */
 .site-foot-inner { max-width: var(--container-wide, 72rem); margin: 0 auto; padding: 8px 24px 0; }
 .site-foot-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: var(--space-6); }
+.site-foot-cols h2,
 .site-foot-cols h4 {
-  margin: 0 0 var(--space-3); font-size: var(--fs-xs); font-weight: 700;
+  margin: 0 0 var(--space-3); padding: 0; border: 0; line-height: 1.3; font-family: var(--font-sans); font-size: var(--fs-xs); font-weight: 700;
   letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--fg-3);
 }
 .site-foot-cols ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
 .site-foot-cols a { color: var(--fg-1); text-decoration: none; font-size: var(--fs-sm); }
+/* Six links per section column; reserved so the footer doesn't grow when the menus load. */
+.site-foot-cols [data-section] ul { min-height: 10.4rem; }
 .site-foot-cols a:hover { color: var(--brand); }
 .smart-footer .smart-footer-fine {
   max-width: var(--container-wide, 72rem); margin: var(--space-6) auto 0; padding: var(--space-4) 24px 0;
@@ -480,14 +686,7 @@
 .smart-footer.shallow { margin-top: var(--space-7); }
 .smart-footer.shallow .smart-footer-fine { margin-top: 0; padding-top: var(--space-4); border-top: 0; }
 
-/* On a phone the nav wraps to two or three rows; a sticky bar that tall eats
-   the screen, so it scrolls away instead. */
 @media (max-width: 46rem) {
-  .smart-topbar { position: static; }
-  .smart-topbar-inner { padding: 10px 16px; gap: 8px; }
-  .smart-topbar-nav { margin-left: 0; width: 100%; }
-  .smart-topbar-nav a, .smart-topbar-nav .dropdown-trigger { padding: 6px 8px; }
-  .smart-topbar-nav .sep { display: none; }  /* it lands mid-wrap, not before GitHub */
   .site-foot-inner { padding: 8px 16px 0; }
 }
 
@@ -584,3 +783,6 @@
 .smart-input:focus-visible, .smart-select:focus-visible {
   outline: none; border-color: var(--brand); box-shadow: var(--shadow-focus);
 }
+
+/* Long identifiers and URLs in inline code wrap instead of widening the page. */
+:not(pre) > code { overflow-wrap: anywhere; }

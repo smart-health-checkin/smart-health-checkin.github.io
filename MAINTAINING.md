@@ -111,14 +111,140 @@ Not versioned. Push to `main` and they deploy.
   `/client/nav.json`, `/client/demo/nav.json`, `/connectathon/nav.json`), with
   hrefs relative to the file. An entry with its own `items` (and a `title`,
   no `href`) is a group: a labeled set of links shown together in the same
-  dropdown. Groups nest one level; menus never fly out. Apart from the section's own front page, every entry sits in a named group; if the only honest name for a group is vague ("Other", "More"), regroup. To add a page to a
+  menu. Groups nest one level; menus never fly out. Apart from the section's own front page, every entry sits in a named group; if the only honest name for a group is vague ("Other", "More"), regroup. To add a page to a
   menu, edit that section's `nav.json` in its own repo. The apex only knows the sections' names, front
   pages, and `nav.json` locations (`SECTIONS` in `assets/site-chrome.js`).
   Adding a whole new section is the only menu change that touches the apex.
+  If nothing in a section's menu links to its front page, the chrome adds
+  "Overview" at the top. A menu with more than 8 links shows in two
+  columns; menus never scroll inside.
 - **Links between sections:** link to a section's front page, or to the
   spec's section anchors (`/spec/#6-4-verifier-cross-validation`), which are
   part of the spec. Deeper links into another repo's pages can break without
   that repo knowing.
+
+### Page template
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page title · Section</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/smart-design.css">
+<script src="/assets/site-chrome.js" defer></script>
+</head>
+<body>
+<div data-smart-topbar></div>
+<nav data-smart-breadcrumb></nav>   <!-- optional; see Breadcrumb -->
+<main id="main">
+  <h1>Page title</h1>
+  …
+</main>
+<div data-smart-footer></div>
+</body>
+</html>
+```
+
+- **One `<main id="main">` and one `<h1>` per page.** The bar's "Skip to
+  content" link targets `#main`. Without one it uses the first `<main>`
+  (giving it `id="main"`), or else the first element after the bar.
+- **Placeholders are replaced, not filled.** Put nothing inside
+  `data-smart-topbar` except tool actions (below). The CSS reserves each
+  placeholder's final height (bar: 59px at 64rem and wider, 55px below;
+  breadcrumb: 40px), so the page doesn't jump when the script runs.
+- **Page CSS must not style bare `header` or `nav` elements** (use a class).
+  The bar resets its own margin, padding, border, and background, but other
+  properties from a global `header {…}` or `nav {…}` rule still leak in.
+- **Fonts:** `smart-design.css` loads Inter, Source Serif 4, and JetBrains
+  Mono from Google Fonts with `font-display: swap`, and `--font-sans` falls
+  back to a local font sized to match Inter, so the swap doesn't reflow text.
+  The two `preconnect` lines let the fonts start sooner. Widths set in `ch`
+  still change a little when Inter arrives; prefer `rem` for layout widths.
+
+### The bar
+
+`<div data-smart-topbar></div>` becomes, in order: a "Skip to content"
+link (visible on focus), the spectrum stripe, and `<header
+class="smart-topbar">`.
+
+- **64rem and wider:** 56px tall, sticky. The logo and "SMART Health
+  Check-in" link to `/` (there is no Home item). Then one button per section
+  (Spec, Developers, Demos, Connectathon) opening that section's menu, and a
+  "⋯" button with GitHub, "Copy llms.txt", and the llms.txt files for the
+  current section and the whole site.
+- **Below 64rem:** 52px tall, one row: the logo, the current section's name
+  (a link to its front page; "SMART Check-in" outside any section below
+  46rem), and a "Menu" button. Menu opens a full-screen panel listing every
+  section as a button that expands its menu in place (the current section
+  starts expanded), then GitHub and the llms.txt links. The bar slides away
+  while scrolling down and comes back on scrolling up, unless the reader
+  asks for reduced motion.
+- **Accessibility:** menus are disclosures (`<button aria-expanded
+  aria-controls>` and plain links; no `role="menu"`). Escape closes the open
+  menu or panel and returns focus to its button. The phone panel keeps Tab
+  inside it while open. Every control shows a focus ring; every bar control is
+  at least 44px square below 64rem.
+
+### Breadcrumb
+
+```html
+<nav data-smart-breadcrumb></nav>
+<nav data-smart-breadcrumb data-current="Short page name"></nav>
+```
+
+Put it right after the bar placeholder. It renders `Section › Group › Page`
+as `<nav class="smart-breadcrumb" aria-label="Breadcrumb"><ol>…</ol></nav>`:
+the section links to its front page, the group is plain text, and the page
+is the current item (`aria-current="page"`). The chrome finds the page in the
+section's `nav.json` by path (ignoring `index.html`, the query, and the
+hash). A page not in the menu gets `Section › Page`, where Page is
+`data-current`, else the first `<h1>`, else the `<title>` up to its first
+" · ", " — ", " | ", or " - ". `data-current` always wins. On a section's
+front page, and outside any section, the breadcrumb is hidden; a template
+shared with the front page should add `hidden` there itself, since the CSS
+reserves 40px for the breadcrumb until the script runs.
+
+### Tool bar
+
+For full-screen tools (the Testing EHR, the testing wallet, the demos) that
+need their own controls in place of the site menus:
+
+```html
+<div data-smart-topbar="tool"
+     data-tool-title="SMART Testing EHR"
+     data-back-href="/connectathon/"
+     data-back-label="Connectathon">
+  <div data-smart-tool-actions>
+    <button class="smart-btn">Reset</button>
+  </div>
+</div>
+```
+
+It renders the logo (a link to `/`), "‹ Connectathon" (the back link),
+the tool's title, and the tool's actions: the children of every
+`[data-smart-tool-actions]` element are moved, not copied, into the bar, so
+event listeners and ids set before the chrome runs survive. Script that
+looks for them after the page loads finds them inside
+`header.smart-topbar .smart-tool-actions`. Same heights as the site bar;
+it stays put while scrolling.
+
+- `data-tool-title`: defaults to the first `<h1>`, then the `<title>`.
+- `data-back-href` and `data-back-label`: default to the current
+  section's front page and name.
+- Below 46rem the back link shrinks to its arrow (still labelled "Back to
+  …" for screen readers), the title truncates, and the actions scroll
+  sideways if they don't fit. Keep phone actions to one or two short
+  buttons. `.smart-btn` in the actions is 40px tall (44px below 46rem).
+
+### Footer
+
+`<div data-smart-footer></div>`: one column per section (Overview, then its
+first five other menu links, groups flattened) and a Project column (Home,
+GitHub).
 
 ## Testing
 
