@@ -111,7 +111,7 @@ Not versioned. Push to `main` and they deploy.
   `/client/nav.json`, `/client/demo/nav.json`, `/connectathon/nav.json`), with
   hrefs relative to the file. An entry with its own `items` (and a `title`,
   no `href`) is a group: a labeled set of links shown together in the same
-  dropdown. Groups nest one level; menus never fly out. To add a page to a
+  dropdown. Groups nest one level; menus never fly out. Apart from the section's own front page, every entry sits in a named group; if the only honest name for a group is vague ("Other", "More"), regroup. To add a page to a
   menu, edit that section's `nav.json` in its own repo. The apex only knows the sections' names, front
   pages, and `nav.json` locations (`SECTIONS` in `assets/site-chrome.js`).
   Adding a whole new section is the only menu change that touches the apex.
