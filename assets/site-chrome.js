@@ -22,6 +22,7 @@
  *   <div data-smart-topbar></div>              the site bar
  *   <div data-smart-topbar="tool" …></div>     the compact bar for tool pages
  *   <nav data-smart-breadcrumb></nav>          Section › Group › Page
+ *     (data-current, data-parent-href, data-parent-label: see MAINTAINING.md)
  *   <div data-smart-footer></div>              the footer
  *
  *   <link rel="stylesheet" href="/assets/smart-design.css">
@@ -284,24 +285,44 @@
     return document.title.split(/\s[—–|·-]\s/)[0];
   }
 
-  /** Section › Group › Page, from the section's menu when it has loaded. */
+  /** The menu entry for a page (by path) and the group it sits in. */
+  function findInMenu(items, p) {
+    var hit = null, group = null;
+    items.forEach(function (i) {
+      if (hit) return;
+      if (i.group) i.items.forEach(function (c) { if (!hit && samePage(c.href, p)) { hit = c; group = i.label; } });
+      else if (samePage(i.href, p)) hit = i;
+    });
+    return { hit: hit, group: group };
+  }
+
+  /** Section › Group › Page, from the section's menu when it has loaded.
+      A page outside the menu can name its parent with data-parent-href and
+      data-parent-label: Section › (parent's group ›) Parent › Page. */
   function renderBreadcrumb(el) {
     var s = currentSection();
     if (!s || samePage(s.href, path)) { el.hidden = true; el.innerHTML = ''; return; }
     var items = menus[s.label] || [];
-    var hit = null, group = null;
-    items.forEach(function (i) {
-      if (hit) return;
-      if (i.group) i.items.forEach(function (c) { if (!hit && samePage(c.href, path)) { hit = c; group = i.label; } });
-      else if (samePage(i.href, path)) hit = i;
-    });
+    var found = findInMenu(items, path), hit = found.hit, group = found.group;
     if (hit && samePage(hit.href, s.href)) { el.hidden = true; el.innerHTML = ''; return; }
     var current = el.getAttribute('data-current') || (hit ? hit.label : pageTitle(el));
+    var parent = '';
+    var parentHref = !hit && el.getAttribute('data-parent-href');
+    if (parentHref) {
+      var u = new URL(parentHref, location.href);
+      var pf = findInMenu(items, u.pathname);
+      var parentLabel = el.getAttribute('data-parent-label') || (pf.hit ? pf.hit.label : '');
+      if (parentLabel) {
+        group = pf.group;
+        parent = '<li><a href="' + esc(u.pathname + u.search + u.hash) + '">' + esc(parentLabel) + '</a></li>';
+      }
+    }
     el.classList.add('smart-breadcrumb');
     if (!el.getAttribute('aria-label')) el.setAttribute('aria-label', 'Breadcrumb');
     el.innerHTML = '<ol>'
       + '<li><a href="' + esc(s.href) + '">' + esc(s.label) + '</a></li>'
       + (group ? '<li><span>' + esc(group) + '</span></li>' : '')
+      + parent
       + '<li><span aria-current="page">' + esc(current) + '</span></li>'
       + '</ol>';
   }

@@ -202,6 +202,8 @@ class="smart-topbar">`.
 ```html
 <nav data-smart-breadcrumb></nav>
 <nav data-smart-breadcrumb data-current="Short page name"></nav>
+<nav data-smart-breadcrumb data-parent-href="/client/docs/api/"
+     data-parent-label="API reference" data-current="ui"></nav>
 ```
 
 Put it right after the bar placeholder. It renders `Section › Group › Page`
@@ -211,10 +213,19 @@ is the current item (`aria-current="page"`). The chrome finds the page in the
 section's `nav.json` by path (ignoring `index.html`, the query, and the
 hash). A page not in the menu gets `Section › Page`, where Page is
 `data-current`, else the first `<h1>`, else the `<title>` up to its first
-" · ", " — ", " | ", or " - ". `data-current` always wins. On a section's
-front page, and outside any section, the breadcrumb is hidden; a template
-shared with the front page should add `hidden` there itself, since the CSS
-reserves 40px for the breadcrumb until the script runs.
+" · ", " — ", " | ", or " - ". `data-current` always wins.
+
+A page not in the menu can name its parent with `data-parent-href` (relative
+or absolute) and `data-parent-label`. The parent becomes a link before the
+page, and if the parent is in the menu its group is shown too:
+`Developers › Reference › API reference › ui`. Without `data-parent-label`
+the parent's menu label is used; a parent that is neither labeled nor in
+the menu is left out. Pages in the menu ignore these attributes.
+
+On a section's front page, and outside any section, the breadcrumb is
+hidden; a template shared with the front page should add `hidden` there
+itself, since the CSS reserves 40px for the breadcrumb until the script
+runs.
 
 ### Tool bar
 
