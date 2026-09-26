@@ -44,23 +44,41 @@
   ];
 
   /** A section's menu items, with hrefs made absolute against its nav.json. */
+  /**
+   * A section's menu, with hrefs made absolute against its nav.json. An entry
+   * with its own `items` is a group: a labeled set of links shown together in
+   * the same dropdown (never a flyout). Groups nest one level only.
+   */
   function loadNav(section) {
     if (!section.nav) return Promise.resolve(null);
     var base = new URL(section.nav, location.origin);
+    function link(i) {
+      var url = new URL(i.href, base);
+      return {
+        href: url.origin === location.origin ? url.pathname + url.search + url.hash : url.href,
+        label: String(i.title || i.label),
+        note: i.note ? String(i.note) : ''
+      };
+    }
+    function isLink(i) { return i && i.href && (i.title || i.label) && !Array.isArray(i.items); }
     return fetch(base.href)
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (json) {
         var items = Array.isArray(json && json.items) ? json.items : [];
-        return items.filter(function (i) { return i && i.href && (i.title || i.label); }).map(function (i) {
-          var url = new URL(i.href, base);
-          return {
-            href: url.origin === location.origin ? url.pathname + url.search + url.hash : url.href,
-            label: String(i.title || i.label),
-            note: i.note ? String(i.note) : ''
-          };
-        });
+        return items.map(function (i) {
+          if (i && Array.isArray(i.items) && (i.title || i.label)) {
+            var children = i.items.filter(isLink).map(link);
+            return children.length ? { group: true, label: String(i.title || i.label), items: children } : null;
+          }
+          return isLink(i) ? link(i) : null;
+        }).filter(Boolean);
       })
       .catch(function () { return null; });
+  }
+
+  /** Every link in a menu, groups flattened, in order. */
+  function leaves(items) {
+    return (items || []).reduce(function (all, i) { return all.concat(i.group ? i.items : [i]); }, []);
   }
 
   function esc(s) {
@@ -82,14 +100,22 @@
     return '<a href="' + esc(section.href) + '" data-section="' + esc(section.label) + '"' + cur + '>' + esc(section.label) + '</a>';
   }
 
+  function menuLink(child, path) {
+    var childCur = samePage(child.href, path) ? ' aria-current="page"' : '';
+    return '<a role="menuitem" href="' + esc(child.href) + '"' + childCur + '>'
+      + '<span class="dd-label">' + esc(child.label) + '</span>'
+      + (child.note ? '<span class="dd-note">' + esc(child.note) + '</span>' : '')
+      + '</a>';
+  }
+
   function sectionDropdown(section, items, path) {
     var active = section.match.test(path);
     var menu = items.map(function (child) {
-      var childCur = samePage(child.href, path) ? ' aria-current="page"' : '';
-      return '<a role="menuitem" href="' + esc(child.href) + '"' + childCur + '>'
-        + '<span class="dd-label">' + esc(child.label) + '</span>'
-        + (child.note ? '<span class="dd-note">' + esc(child.note) + '</span>' : '')
-        + '</a>';
+      if (!child.group) return menuLink(child, path);
+      return '<div class="dd-group" role="group" aria-label="' + esc(child.label) + '">'
+        + '<div class="dd-group-label" aria-hidden="true">' + esc(child.label) + '</div>'
+        + child.items.map(function (c) { return menuLink(c, path); }).join('')
+        + '</div>';
     }).join('');
     return '<div class="dropdown" data-section="' + esc(section.label) + '" data-active="' + (active ? 'true' : 'false') + '">'
       +   '<button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false">'
@@ -174,7 +200,7 @@
   function footerColumn(section, items) {
     // The column always starts with the section's front page, so skip menu
     // items that point there too.
-    var rest = (items || []).filter(function (i) { return !samePage(i.href, section.href); });
+    var rest = leaves(items).filter(function (i) { return !samePage(i.href, section.href); });
     var links = [{ href: section.href, label: section.label === 'Overview' ? 'Home' : 'Overview' }].concat(rest.slice(0, 5));
     return '<div data-section="' + esc(section.label) + '"><h4>' + esc(section.label) + '</h4><ul>'
       + links.map(function (l) { return '<li><a href="' + esc(l.href) + '">' + esc(l.label) + '</a></li>'; }).join('')

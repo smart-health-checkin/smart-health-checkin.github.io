@@ -302,6 +302,22 @@
   color: var(--fg-3);
   font-weight: 400;
 }
+/* A group: a labeled set of links inside the same menu (menus never fly out). */
+.smart-topbar-nav .dropdown-menu .dd-group + .dd-group,
+.smart-topbar-nav .dropdown-menu a + .dd-group,
+.smart-topbar-nav .dropdown-menu .dd-group + a {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+.smart-topbar-nav .dropdown-menu .dd-group-label {
+  padding: 4px 10px 2px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
 .smart-topbar-nav .dropdown-menu a:hover .dd-note,
 .smart-topbar-nav .dropdown-menu a[aria-current="page"] .dd-note {
   color: var(--brand-ink);
@@ -314,6 +330,11 @@
     right: 0;
     min-width: 240px;
   }
+}
+/* Long menus scroll inside the dropdown instead of running off the screen. */
+.smart-topbar-nav .dropdown-menu {
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
 }
 
 /* ---------- LLM-friendly docs bundle widget (in topbar) ------------- */
