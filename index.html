@@ -30,9 +30,12 @@
   .eyebrow { margin: 0 0 var(--space-4); font-size: var(--fs-xs); font-weight: 700; letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--brand); }
   .lede { font-family: var(--font-serif); font-size: var(--fs-md); color: var(--fg-2); margin: var(--space-5) 0 0; line-height: 1.55; max-width: 40rem; }
 
+  .status { margin: var(--space-4) 0 0; color: var(--fg-2); max-width: 44rem; }
+  .explain { max-width: 44rem; margin-top: var(--space-5); }
+  .explain p { margin: 0 0 var(--space-4); }
+  .explain p:last-child { margin-bottom: 0; }
   section.band { padding: var(--space-8) 0; border-top: 1px solid var(--border); }
   .note { margin: 0 0 var(--space-5); color: var(--fg-2); max-width: 44rem; }
-  .after { margin: var(--space-4) 0 0; color: var(--fg-2); max-width: 44rem; }
 
   /* --- the three-step diagram (inline SVG, the spec explainers' .xd look) --- */
   .xd-figure { margin: 0; padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
@@ -101,9 +104,18 @@
     <p class="eyebrow">Open standard · draft 1.0</p>
     <h1>SMART Health Check-in</h1>
     <p class="lede">
-      Patients share what a clinic needs before a visit, from a health app
-      they choose. It works in today's browsers through the W3C Digital
-      Credentials API.
+      Before a visit, patients are often asked to write out their allergies,
+      medications and insurance details again, on a clipboard or a web form.
+      SMART Health Check-in lets a clinic's website ask the patient's own
+      health app for that information instead. The patient chooses what to
+      share, and the clinic gets it straight from the app.
+    </p>
+    <p class="status">
+      It is a draft open standard. It works in current web browsers through
+      the W3C Digital Credentials API, the browser feature that is also used
+      for digital driver's licenses. This project publishes reference
+      code and test apps, but no health app that patients use today supports
+      it yet.
     </p>
   </div>
 </div>
@@ -225,31 +237,56 @@
 </svg>
 </div>
     </figure>
-    <p class="after">The data behind each step: <a href="/spec/smart-model-explainer.html">Request and response explainer</a>.</p>
+    <div class="explain">
+      <p>
+        The patient's health app, called a wallet in the specification, is an
+        app that already holds their health information: records it has
+        collected from their doctors' and hospitals' patient portals, and
+        cards such as an insurance card. It can be an app on their phone or a
+        website that opens in a browser tab. The clinic's page doesn't need to
+        know which one the patient uses; the phone or browser lets the patient
+        pick, and tells the app which website is asking.
+      </p>
+      <p>
+        The app shows the patient each item the clinic asked for. Nothing is
+        sent until they approve, and they can share some items and decline
+        others. The clinic learns which items were declined, so staff know
+        what is still left to ask at the front desk.
+      </p>
+      <p>
+        For each request the clinic's page creates a one-time key, and the app
+        encrypts its answer to that key. Records signed by whoever issued them, such as a digital insurance
+        card signed by the insurer, can be checked against that issuer.
+        The records arrive in FHIR, the standard format for health data that
+        clinic record systems already use. The
+        <a href="/spec/smart-model-explainer.html">Request and response explainer</a>
+        shows the data sent at each step.
+      </p>
+    </div>
   </div>
 </section>
 
 <section class="band" aria-labelledby="try-h">
   <div class="page">
     <h2 id="try-h">Try it</h2>
-    <p class="note">The demos use made-up patients and this project's test wallets: a web wallet, the <a href="/connectathon/testing-wallet/">SMART Testing Wallet</a>, and the <a href="https://github.com/smart-health-checkin/android-wallet/releases/latest">reference Android wallet</a>. No production health app supports check-in yet.</p>
+    <p class="note">The demos check in a made-up patient at a pretend clinic. The patient's side is one of this project's test apps: a demo web wallet, the <a href="/connectathon/testing-wallet/">SMART Testing Wallet</a>, or the <a href="https://github.com/smart-health-checkin/android-wallet/releases/latest">reference Android wallet</a>.</p>
     <div class="demos">
       <a class="smart-panel demo" href="/client/demo/#wallet=platform">
         <span class="smart-chip info">Online</span>
         <h3>Check in from a phone</h3>
-        <p>Uses the wallet app on your phone. On a computer, the browser shows a QR code to scan with the phone.</p>
+        <p>The clinic's page asks the wallet apps installed on your phone, so you need a test wallet such as the reference Android wallet. On a computer, the browser shows a QR code so you can finish on your phone.</p>
         <span class="go">Try it →</span>
       </a>
       <a class="smart-panel demo kiosk" href="/client/demo/kiosk.html">
         <span class="smart-chip success">In person</span>
         <h3>Check in at a kiosk</h3>
-        <p>A clinic screen shows a QR code. You approve on your phone, and the answer goes back to the screen.</p>
+        <p>For a shared screen at the front desk, which has no wallet of its own. You scan its QR code, approve on your phone, and the answer goes back to the screen.</p>
         <span class="go">Try it →</span>
       </a>
       <a class="smart-panel demo web" href="/client/demo/">
         <span class="smart-chip warning">Any browser</span>
         <h3>Check in with a web wallet</h3>
-        <p>No phone needed. A demo wallet opens in a new tab.</p>
+        <p>Nothing to install. A demo wallet opens in a new tab, shows you what the clinic asked for, and sends back what you approve.</p>
         <span class="go">Try it →</span>
       </a>
     </div>
@@ -262,24 +299,24 @@
     <ul class="steps">
       <li class="smart-panel">
         <h3><a href="/client/demo/">Try the demo</a></h3>
-        <p>For anyone. A pretend clinic check-in with a demo wallet.</p>
+        <p>For anyone. Check in at a pretend clinic with the demo web wallet, in any browser.</p>
       </li>
       <li class="smart-panel">
         <h3><a href="/client/docs/tutorial.html">Build a check-in page</a></h3>
-        <p>For EHR, portal and clinic web developers. A tutorial that ends with a working page.</p>
+        <p>For developers of clinic websites, patient portals and electronic health record systems. A tutorial that builds a working check-in page with this project's JavaScript library.</p>
       </li>
       <li class="smart-panel">
         <h3><a href="/client/docs/build-a-wallet.html">Build a wallet</a></h3>
-        <p>For health-app developers. What a wallet receives and sends back.</p>
-        <span class="also">For a wallet in a browser tab: <a href="/client/docs/web-wallet-handoff.html">Web wallet hand-off</a></span>
+        <p>For developers of patient health apps. How a wallet receives a clinic's request, shows it to the patient, and sends back the answer.</p>
+        <span class="also">For a wallet that runs in a browser tab: <a href="/client/docs/web-wallet-handoff.html">Web wallet hand-off</a></span>
       </li>
       <li class="smart-panel">
         <h3><a href="/spec/smart-model-explainer.html">Read the spec</a></h3>
-        <p>For implementers and standards readers. The Request and response explainer walks through one example.</p>
-        <span class="also">Full text: <a href="/spec/">SMART Health Check-in 1.0</a></span>
+        <p>For implementers and anyone reviewing the standard. The Request and response explainer walks through the data of one check-in.</p>
+        <span class="also">The specification itself: <a href="/spec/">SMART Health Check-in 1.0</a></span>
       </li>
     </ul>
-    <p class="event"><b>Connectathon:</b> date to be announced. <a href="/connectathon/">Join us</a>.</p>
+    <p class="event"><b>Connectathon:</b> an online testing event where developers connect their software and patients and clinic staff try it. Date to be announced. <a href="/connectathon/">Join us</a>.</p>
   </div>
 </section>
 </main>
