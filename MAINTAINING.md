@@ -488,7 +488,7 @@ narrowest one that covers a change; CI runs the rest.
 | What it proves | Check | Runs | Run it locally |
 | --- | --- | --- | --- |
 | The spec is consistent: requirement IDs unique, JSON examples valid, CDDL matches the real capture, Appendix A recomputes from it, old anchors and links resolve | spec `scripts/build-pages.sh` | spec push to `main` and PRs | `bun install && scripts/build-pages.sh` (needs `gem install cddl`) |
-| Each implementation meets the spec, one capability at a time | the spec's [conformance cases](https://github.com/smart-health-checkin/spec/tree/main/conformance), with a `known-failures.json` per implementation (all empty today) | CI in client, android-wallet, swift, connectathon | each repo's test command (see its `AGENTS.md`) |
+| Each implementation meets the spec, one capability at a time | the spec's [conformance tests](https://github.com/smart-health-checkin/spec/tree/main/conformance), with a `known-failures.json` per implementation (all empty today) | CI in client, android-wallet, swift, connectathon | each repo's test command (see its `AGENTS.md`) |
 | Each wallet's output is accepted by the reference verifier | `spec-conformance/reference/verify-wallet-output.ts` on credentials the wallet built | android-wallet and swift CI | see android-wallet and swift `AGENTS.md` |
 | The client library's hosted bundles run, and every docs link resolves | client `scripts/build-pages.sh` (`verify-lib.ts`, `check-links.ts`) | client push to `main` | `scripts/build-pages.sh` |
 | The web flow works end to end: the live [Testing EHR](https://smart-health-checkin.org/connectathon/testing-ehr/) against the live [testing wallet](https://smart-health-checkin.org/connectathon/testing-wallet/), every scenario and fault, warnings where the spec says warn | connectathon `scripts/self-test.ts` | after every connectathon deploy, and nightly | `bun scripts/self-test.ts` (or against a local build: see connectathon `AGENTS.md`) |
@@ -502,8 +502,8 @@ crosses repos, run the self-test.
 
 ## Native apps
 
-A native app checks in through the web flow (platform notes and the client's
-Native apps guide explain why). Three repos hold the pieces:
+A native app checks in through the web flow ([Platform notes](https://smart-health-checkin.org/spec/platform-notes.html) and the client's
+[Native Verifier apps](https://smart-health-checkin.org/client/docs/native-apps.html) guide explain why). Three repos hold the pieces:
 
 - **The bridge page** is `demo/native-bridge.html` in client, served at
   `/client/demo/native-bridge.html`. It runs the normal client library and

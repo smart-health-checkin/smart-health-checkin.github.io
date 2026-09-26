@@ -10,7 +10,7 @@
  *   { "label": "Spec", "href": "./",
  *     "items": [
  *       { "title": "Explainers", "items": [
- *         { "title": "Request and response", "href": "smart-model-explainer.html", "note": "…" } ] } ] }
+ *         { "title": "Request and response", "href": "request-response.html", "note": "…" } ] } ] }
  *
  * with hrefs relative to the nav.json itself. An entry with its own `items`
  * is a group: a labeled set of links shown together in the same menu. Groups
