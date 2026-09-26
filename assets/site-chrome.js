@@ -33,11 +33,11 @@
     {
       label: 'Spec', href: '/spec/', match: /^\/spec\//, llms: '/spec/',
       items: [
-        { href: '/spec/', label: 'Draft spec 1.0', note: 'Normative reference' },
         { href: '/spec/smart-model-explainer.html', label: 'Model', note: 'Request and response JSON' },
         { href: '/spec/wire-protocol-explainer.html', label: 'Wire protocol', note: 'CBOR, COSE, HPKE' },
         { href: '/spec/wire-protocol-inspector.html', label: 'Capture inspector', note: 'Byte-level fixture viewer' },
-        { href: '/spec/kiosk-flow-explainer.html', label: 'Kiosk flow', note: 'Front-desk handoff' }
+        { href: '/spec/kiosk-flow-explainer.html', label: 'Kiosk flow', note: 'Front-desk handoff' },
+        { href: '/spec/', label: 'Draft spec 1.0', note: 'Normative reference' }
       ]
     },
     {
