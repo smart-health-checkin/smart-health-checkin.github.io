@@ -77,7 +77,10 @@ so a missed pin shows up before deploy.
 
 1. Tag in android-wallet: `git tag -a vX.Y.Z -m vX.Y.Z && git push origin vX.Y.Z`.
 2. Nothing else to update: every link and connectathon's CI use
-   `releases/latest/download/smart-health-checkin-wallet-debug.apk`.
+   `releases/latest/download/smart-health-checkin-wallet-debug.apk`. The same
+   release carries the example Verifier app,
+   `releases/latest/download/smart-health-checkin-verifier-app.apk`, signed
+   with the key `/.well-known/assetlinks.json` lists.
 
 ### Spec (`vX.Y.Z`: fixtures and conformance cases)
 
