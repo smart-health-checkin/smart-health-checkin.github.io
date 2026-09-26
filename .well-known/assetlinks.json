@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.use_as_origin"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "org.smarthealthit.checkin.rp",
+      "sha256_cert_fingerprints": [
+        "84:64:3E:B6:9B:C9:5A:2D:C4:EC:2D:4D:92:AF:77:A6:4A:8C:B0:0F:0E:2C:7B:99:BC:E3:93:CE:E2:02:DD:A4"
+      ]
+    }
+  }
+]
