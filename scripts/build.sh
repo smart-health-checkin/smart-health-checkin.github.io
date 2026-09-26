@@ -8,7 +8,6 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 OUT="${OUT_DIR:-_site}"
-KTC="${KTC_DIR:-../ktc}"
 ORIGIN="https://smart-health-checkin.org"
 
 rm -rf "$OUT" && mkdir -p "$OUT"
@@ -16,14 +15,9 @@ cp index.html 404.html CNAME "$OUT/"
 cp -r assets "$OUT/assets"
 touch "$OUT/.nojekyll"
 
-# The Closing the Loop deck: hosted here at its original URL, not in the nav.
-if [ -f "$KTC/closing-the-loop.html" ]; then
-  mkdir -p "$OUT/ktc/closing-the-loop"
-  cp "$KTC/closing-the-loop.html" "$OUT/ktc/closing-the-loop/index.html"
-  echo "ktc: copied"
-else
-  echo "warning: $KTC/closing-the-loop.html not found; skipping /ktc/" >&2
-fi
+# The Closing the Loop deck (moved here from the archived ktc repo), at its original URL, not in the nav.
+mkdir -p "$OUT/ktc/closing-the-loop"
+cp ktc/closing-the-loop.html "$OUT/ktc/closing-the-loop/index.html"
 
 # llms.txt indexes the sections; llms-full.txt concatenates their own bundles,
 # fetched from the live site because they deploy separately. A section that

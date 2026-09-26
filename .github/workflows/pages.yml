@@ -21,9 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
-        with: { repository: smart-health-checkin/ktc, path: _src/ktc }
-      - run: KTC_DIR=_src/ktc scripts/build.sh
+      - run: scripts/build.sh
       - uses: actions/upload-pages-artifact@v3
         with: { path: _site }
 
