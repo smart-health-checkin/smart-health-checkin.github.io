@@ -14,7 +14,7 @@ rm -rf "$OUT" && mkdir -p "$OUT"
 cp index.html 404.html CNAME "$OUT/"
 cp -r assets "$OUT/assets"
 touch "$OUT/.nojekyll"
-# Digital Asset Links: lets the example native app (android-wallet/rp-app, signed
+# Digital Asset Links: lets the example native app (android-wallet/verifier-app, signed
 # with the shared key) open a message channel to pages on this domain from a
 # Custom Tab. See /client/docs/native-apps.html.
 cp -r .well-known "$OUT/.well-known"
