@@ -172,7 +172,10 @@
 
   // One column per section, filled from the same nav.json files as the bar.
   function footerColumn(section, items) {
-    var links = [{ href: section.href, label: section.label === 'Overview' ? 'Home' : 'Overview' }].concat((items || []).slice(0, 5));
+    // The column always starts with the section's front page, so skip menu
+    // items that point there too.
+    var rest = (items || []).filter(function (i) { return !samePage(i.href, section.href); });
+    var links = [{ href: section.href, label: section.label === 'Overview' ? 'Home' : 'Overview' }].concat(rest.slice(0, 5));
     return '<div data-section="' + esc(section.label) + '"><h4>' + esc(section.label) + '</h4><ul>'
       + links.map(function (l) { return '<li><a href="' + esc(l.href) + '">' + esc(l.label) + '</a></li>'; }).join('')
       + '</ul></div>';
