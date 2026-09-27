@@ -48,7 +48,7 @@ Nothing is shared by copying files between repos, and there are no submodules.
 | Nightly | connectathon: self-test, and the Android end-to-end run against the latest APK |
 | Hourly | connectathon: site rebuild (registry, results) and wallet-registry liveness |
 | Push or PR in android-wallet, swift | Their tests, which fetch the pinned spec fixtures and conformance cases |
-| Push to `main` or PR in connectathon | `check.yml`: `bun run check` and `bun test tests` (conformance included); `validate.yml` (FHIR validation) when `Questionnaire/`, `responses/`, or the testing wallet's data change |
+| Push to `main` or PR in connectathon | `check.yml`: `bun run check` and `bun test tests` (conformance included); `validate.yml` (FHIR validation) when `Questionnaire/`, `responses/`, or the Testing Wallet's data change |
 | Pull request in spec | `check.yml`: the full spec build and its checks, without deploying |
 | Push to a non-`main` branch or PR in client | `ci.yml`: typecheck, tests, conformance |
 | Participant PR in connectathon | Validated, and auto-merged when the author owns the participant file |
