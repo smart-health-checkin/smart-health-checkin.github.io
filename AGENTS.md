@@ -5,7 +5,7 @@ sections deploy from their own repos. [MAINTAINING.md](MAINTAINING.md) is the
 map of every repo: what each publishes and consumes, what triggers what, and
 how to release. Read it before changing anything that crosses repositories.
 
-- Build: `scripts/build.sh` (into `_site/`). Whole-site preview from sibling
+- Build: `bun install && scripts/build.sh` (into `_site/`). Whole-site preview from sibling
   checkouts: `scripts/preview.sh`.
 - Deploys on every push to `main`.
 - `assets/site-chrome.js` and `assets/smart-design.css` load at runtime on
@@ -25,6 +25,13 @@ how to release. Read it before changing anything that crosses repositories.
   request interception (headless Chromium, 390x844 and 1280x800): no
   sideways scroll, bar height, menu contents against each `nav.json`,
   keyboard (Tab, Enter, Escape), and layout shift.
+- `llms-background.md` is the hand-written background every section's
+  `llms-full.txt` starts with; the sections fetch it from the live site at
+  build time. `scripts/llms.ts` writes the root `llms.txt` (the sections'
+  files first) and `llms-full.txt` (the background, the home page, and the
+  KTC deck). Keep the background accurate against the spec and about 1,000
+  words. See MAINTAINING.md, "llms.txt", including which parts of
+  `scripts/llms.ts` must match the sections' copies.
 - Menus belong to the sections: each publishes `nav.json`. Only edit
   `SECTIONS` in `assets/site-chrome.js` to add or rename a whole section.
 - `/.well-known/assetlinks.json` vouches for the example native app

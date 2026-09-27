@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Builds the apex of smart-health-checkin.org: the home page, the assets every
-# section loads, CNAME, the KTC deck, and llms.txt.
+# section loads, CNAME, the KTC deck, the shared llms background, and llms.txt.
 #
 # The sections deploy themselves. GitHub mounts each repo in the org beneath
 # this one by name — client → /client/, spec → /spec/ — so nothing here builds
@@ -23,31 +23,11 @@ cp -r .well-known "$OUT/.well-known"
 mkdir -p "$OUT/ktc/closing-the-loop"
 cp ktc/closing-the-loop.html "$OUT/ktc/closing-the-loop/index.html"
 
-# llms.txt indexes the sections; llms-full.txt concatenates their own bundles,
-# fetched from the live site because they deploy separately. A section that
-# isn't up yet is noted, not fatal.
-{
-  echo "# SMART Health Check-in"
-  echo
-  echo "> A draft open standard for pre-visit check-in: a clinic's page asks, over the W3C Digital Credentials API, for what the visit needs, and the patient answers from a health app of their choice that already has their records. The answer comes back to that same page."
-  echo
-  echo "## Sections"
-  echo "- [Specification]($ORIGIN/spec/llms.txt): the protocol, explainers, wire format, conformance fixtures"
-  echo "- [JavaScript client]($ORIGIN/client/llms.txt): install, guides, API reference"
-  echo
-  echo "## Optional"
-  echo "- [Everything in one file]($ORIGIN/llms-full.txt)"
-} > "$OUT/llms.txt"
-{
-  echo "# SMART Health Check-in — everything"
-  for section in spec client; do
-    echo; echo; echo "---"; echo
-    if body=$(curl -fsS --max-time 20 "$ORIGIN/$section/llms-full.txt" 2>/dev/null); then
-      printf '%s\n' "$body"
-    else
-      echo "($ORIGIN/$section/llms-full.txt was not reachable when this file was built)"
-    fi
-  done
-} > "$OUT/llms-full.txt"
+# llms-background.md is the background every section's llms-full.txt starts
+# with; the sections fetch it from here at build time. llms.txt indexes this
+# section and every other section's files; llms-full.txt is the background and
+# this repo's pages (scripts/llms.ts).
+cp llms-background.md "$OUT/llms-background.md"
+bun scripts/llms.ts "$OUT"
 
 echo "Built $OUT"

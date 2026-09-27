@@ -1,0 +1,14 @@
+{
+  "name": "smart-health-checkin-apex",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "scripts/build.sh"
+  },
+  "devDependencies": {
+    "@mixmark-io/domino": "^2.2.0",
+    "@types/bun": "latest",
+    "@types/turndown": "^5.0.6",
+    "turndown": "^7.2.4"
+  }
+}
