@@ -184,9 +184,11 @@ such as `/ktc/`, offer the root's.
   background fetch, the checks, and the `SECTIONS` list) is the same in all
   four. Change those parts in every repo together.
 - **Checks:** a section's build fails if a page in its built site is neither
-  in `llms.txt` nor in the script's `SKIP` list (each skip has a reason), or
+  in `llms.txt` nor in the script's `SKIP` list (each skip has a reason),
   if a page or text file the script names (`PAGES`, `TEXTS`) is missing
-  from the build.
+  from the build, or if a link in `llms.txt` into the section names a file
+  the build didn't produce. Links into other sections are checked only on
+  the live site, since each section deploys on its own.
 - **Adding a section:** add it to `SECTIONS` in `assets/site-chrome.js`
   (with `llms`), to `SECTIONS` in every `scripts/llms.ts`, and to the
   background's list of sections.
@@ -587,7 +589,7 @@ narrowest one that covers a change; CI runs the rest.
 | The spec is consistent: requirement IDs unique, JSON examples valid, CDDL matches the real capture, Appendix A recomputes from it, old anchors and links resolve | spec `scripts/build-pages.sh` | spec push to `main` and PRs | `bun install && scripts/build-pages.sh` (needs `gem install cddl`) |
 | Each implementation meets the spec, one capability at a time | the spec's [conformance tests](https://github.com/smart-health-checkin/spec/tree/main/conformance), with a `known-failures.json` per implementation (all empty today) | CI in client, android-wallet, swift, connectathon | each repo's test command (see its `AGENTS.md`) |
 | Each wallet's output is accepted by the reference verifier | `spec-conformance/reference/verify-wallet-output.ts` on credentials the wallet built | android-wallet and swift CI | see the [android-wallet](https://github.com/smart-health-checkin/android-wallet/blob/main/AGENTS.md) and [swift](https://github.com/smart-health-checkin/swift/blob/main/AGENTS.md) `AGENTS.md` |
-| Each section's llms.txt has every page it publishes, or skips it with a reason, and every file it names exists | each repo's `scripts/llms.ts`, at the end of its build | every build | that repo's build |
+| Each section's llms.txt has every page it publishes, or skips it with a reason, and its links into the section resolve | each repo's `scripts/llms.ts`, at the end of its build | every build | that repo's build |
 | The client library's hosted bundles run, and every docs link resolves | client `scripts/build-pages.sh` (`verify-lib.ts`, `check-links.ts`) | client push to `main` | `scripts/build-pages.sh` |
 | The web flow works end to end: the live [Testing EHR](https://smart-health-checkin.org/connectathon/testing-ehr/) against the live [Testing Wallet](https://smart-health-checkin.org/connectathon/testing-wallet/), every scenario and fault, warnings where the spec says warn | connectathon `scripts/self-test.ts` | after every connectathon deploy, and nightly | `bun scripts/self-test.ts` (or against a local build: see connectathon [`AGENTS.md`](https://github.com/smart-health-checkin/connectathon/blob/main/AGENTS.md)) |
 | Chrome on Android, the reference Android wallet, and the Testing EHR work together | connectathon `scripts/android-e2e.ts` | nightly on an emulator in CI, with the latest APK | `bun scripts/android-e2e.ts --release` with an emulator or phone |
