@@ -90,7 +90,7 @@ so a missed pin shows up before deploy.
 A spec tag pins `fixtures/` (the real capture and synthetic fixtures) and
 `conformance/` (the single-capability cases every implementation runs, with a
 known-failures list) for everything that tests against them. Current:
-`v1.0.0-draft.1`; the next draft is `v1.0.0-draft.2`.
+`v1.0.0-draft.2`; the next draft is `v1.0.0-draft.3`.
 
 1. Change `fixtures/`, or change and re-run `tools/conformance/generate.ts`,
    in spec. Consumers can try it first with `SPEC_DIR=../spec`.
