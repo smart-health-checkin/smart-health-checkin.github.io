@@ -25,7 +25,8 @@
  *     (data-current, data-parent-href, data-parent-label: see MAINTAINING.md)
  *   <div data-smart-footer></div>              the footer
  *
- * It also adds a copy button to every <pre> (opt out with data-no-copy).
+ * It also adds a copy button to every <pre> (opt out with data-no-copy), and
+ * the site's tab icons to a page that declares none.
  *
  *   <link rel="stylesheet" href="/assets/smart-design.css">
  *   <script src="/assets/site-chrome.js" defer></script>
@@ -702,6 +703,27 @@
       });
     });
   }
+
+  // The SMART starburst as the tab icon, served from the apex root. A page
+  // that declares its own icon keeps it.
+  function addIcons() {
+    var head = document.head;
+    if (!head) return;
+    function link(rel, href, type, sizes) {
+      var l = document.createElement('link');
+      l.rel = rel;
+      l.href = href;
+      if (type) l.type = type;
+      if (sizes) l.sizes = sizes;
+      head.appendChild(l);
+    }
+    if (!head.querySelector('link[rel~="icon"]')) {
+      link('icon', '/favicon.ico', null, '32x32');
+      link('icon', '/favicon.svg', 'image/svg+xml');
+    }
+    if (!head.querySelector('link[rel="apple-touch-icon"]')) link('apple-touch-icon', '/apple-touch-icon.png');
+  }
+  addIcons();
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', mount);

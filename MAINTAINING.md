@@ -115,6 +115,11 @@ Not versioned. Push to `main` and they deploy.
   ([Colors and dark mode](#colors-and-dark-mode)), the shared
   [components](#components), and the [diagram](#diagrams) classes; tools that show JSON load
   [`/assets/smart-json.js`](#json-at-runtime).
+- **Tab icon:** the apex serves the SMART starburst as `/favicon.ico`,
+  `/favicon.svg`, and `/apple-touch-icon.png`. The chrome adds
+  `<link rel="icon">` and `<link rel="apple-touch-icon">` to any page that
+  declares none, so a page that wants its own icon declares it in its
+  `<head>`.
 - **Menus:** each section publishes `nav.json` (`/spec/nav.json`,
   `/client/nav.json`, `/client/demo/nav.json`, `/connectathon/nav.json`), with
   hrefs relative to the file. An entry with its own `items` (and a `title`,
@@ -126,10 +131,13 @@ Not versioned. Push to `main` and they deploy.
   If nothing in a section's menu links to its front page, the chrome adds
   "Overview" at the top. A menu with more than 8 links shows in two
   columns; menus never scroll inside.
-- **Links between sections:** link to a section's front page, or to the
-  spec's section anchors (`/spec/#6-4-verifier-cross-validation`), which are
-  part of the spec. Deeper links into another repo's pages can break without
-  that repo knowing.
+- **Links between sections:** every reference to something documented
+  elsewhere (a step, a section, a page, a tool) links to exactly that place,
+  with an anchor for a step or section, such as
+  `/client/docs/wallets.html#kiosk-hand-off` or
+  `/spec/#6-4-verifier-cross-validation`. When you rename a page or change an
+  anchor that other pages link to, search every repo for links to it and
+  update them in the same change.
 
 ### Page template
 

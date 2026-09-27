@@ -11,7 +11,7 @@ OUT="${OUT_DIR:-_site}"
 ORIGIN="https://smart-health-checkin.org"
 
 rm -rf "$OUT" && mkdir -p "$OUT"
-cp index.html 404.html CNAME "$OUT/"
+cp index.html 404.html CNAME favicon.ico favicon.svg apple-touch-icon.png "$OUT/"
 cp -r assets "$OUT/assets"
 touch "$OUT/.nojekyll"
 # Digital Asset Links: lets the example native app (android-wallet/verifier-app, signed
