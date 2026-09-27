@@ -344,8 +344,11 @@ fine print.
   front page; group labels are small-caps subheads (`<h3>`), and each list
   is labelled by its heading. The current page is marked
   `aria-current="page"`.
-- **Layout:** five columns at 64rem and wider, three below, two below
-  46rem, where every link is at least 44px tall. Nothing collapses.
+- **Layout:** dense on purpose: links sit close together (each at least
+  24px tall) and the space goes between groups. Five columns side by side at
+  64rem and wider; below that the sections flow through three columns, then
+  two below 46rem, newspaper style, so a short section doesn't leave a gap
+  beside a long one. Nothing collapses.
 - **Layout shift:** the footer's frame renders at once; its contents arrive
   together once every `nav.json` has loaded. The footer is the last thing on
   the page, so it grows downward without moving anything. Put nothing after

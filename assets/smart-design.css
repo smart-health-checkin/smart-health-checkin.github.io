@@ -1003,11 +1003,14 @@ html.smart-menu-open, html.smart-menu-open body { overflow: hidden; }
 }
 .site-foot-cols a:hover { color: var(--brand-ink); text-decoration: underline; }
 .site-foot-cols a[aria-current="page"] { color: var(--brand-ink); font-weight: 600; }
+/* Narrower screens flow the sections through columns, newspaper style, so
+   a short section doesn't leave a gap beside a long one. */
 @media (max-width: 63.99rem) {
-  .site-foot-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .site-foot-cols { display: block; columns: 3; column-gap: var(--space-5); }
+  .site-foot-col { break-inside: avoid; margin-bottom: var(--space-5); }
 }
 @media (max-width: 46rem) {
-  .site-foot-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5) var(--space-4); }
+  .site-foot-cols { columns: 2; column-gap: var(--space-4); }
   .site-foot-cols ul a { padding: 3px 0; }
 }
 .smart-footer .smart-footer-fine {
