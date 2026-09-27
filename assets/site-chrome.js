@@ -55,7 +55,8 @@
     { label: 'Spec', href: '/spec/', match: /^\/spec\//, llms: '/spec/', nav: '/spec/nav.json' },
     { label: 'Developers', href: '/client/', match: /^\/client\/(?!demo\/)/, llms: '/client/', nav: '/client/nav.json' },
     { label: 'Demos', href: '/client/demo/', match: /^\/client\/demo\//, llms: '/client/', nav: '/client/demo/nav.json' },
-    { label: 'Connectathon', href: '/connectathon/', match: /^\/connectathon\//, llms: '/connectathon/', nav: '/connectathon/nav.json' }
+    // The connectathon publishes no llms.txt of its own; its pages offer the whole site's.
+    { label: 'Connectathon', href: '/connectathon/', match: /^\/connectathon\//, llms: '/', nav: '/connectathon/nav.json' }
   ];
 
   // A section menu with more links than this shows in two columns.
