@@ -132,6 +132,18 @@ Not versioned. Push to `main` and they deploy.
   If nothing in a section's menu links to its front page, the chrome adds
   "Overview" at the top. The [footer](#footer) shows every menu in full. A menu with more than 8 links shows in two
   columns; menus never scroll inside.
+- **Section front pages:** a front page does one of two jobs. Where a
+  section serves several kinds of readers who need routing, its front page
+  is an overview that sends each kind to its starting point (Developers:
+  building a check-in page or a wallet; Connectathon: one path per kind of
+  participant), and its menu calls it "Overview". Where the section's main
+  thing is itself the best place to start, the front page is that thing and
+  the menu lists it by its own name: the Spec's front page is the
+  specification (its URL is the one people cite, with requirement anchors
+  such as `/spec/#XV-2`, and it opens with a "Start here" box linking every
+  explainer), and the Demos' front page is the clinic check-in demo. The
+  home page is the site-wide overview for anyone. Give a new section the
+  kind of front page that fits, and say why in its AGENTS.md if it differs.
 - **Links between sections:** every reference to something documented
   elsewhere (a step, a section, a page, a tool) links to exactly that place,
   with an anchor for a step or section, such as
