@@ -531,7 +531,7 @@ narrowest one that covers a change; CI runs the rest.
 | The web flow works end to end: the live [Testing EHR](https://smart-health-checkin.org/connectathon/testing-ehr/) against the live [Testing Wallet](https://smart-health-checkin.org/connectathon/testing-wallet/), every scenario and fault, warnings where the spec says warn | connectathon `scripts/self-test.ts` | after every connectathon deploy, and nightly | `bun scripts/self-test.ts` (or against a local build: see connectathon [`AGENTS.md`](https://github.com/smart-health-checkin/connectathon/blob/main/AGENTS.md)) |
 | Chrome on Android, the reference Android wallet, and the Testing EHR work together | connectathon `scripts/android-e2e.ts` | nightly on an emulator in CI, with the latest APK | `bun scripts/android-e2e.ts --release` with an emulator or phone |
 | A native Android app can check in directly and through the browser (bridge page, message channel, large responses) | android-wallet `tools/verifier-app-e2e/run.ts` | local only (needs an emulator with Chrome) | see android-wallet [`AGENTS.md`](https://github.com/smart-health-checkin/android-wallet/blob/main/AGENTS.md) |
-| The reference EHR demo still works against a wallet | connectathon `scripts/e2e-demo.ts` | by hand | `bun scripts/e2e-demo.ts` |
+| The clinic check-in demo still works against a wallet | connectathon `scripts/e2e-demo.ts` | by hand | `bun scripts/e2e-demo.ts` |
 
 Before a release, the releasing repo's own checks must pass. After a release,
 bump the consumers and let their CI run (see [Releasing](#releasing)). After a change that
