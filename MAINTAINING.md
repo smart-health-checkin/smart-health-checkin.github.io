@@ -12,7 +12,7 @@ repositories.
 | [smart-health-checkin.github.io](https://github.com/smart-health-checkin/smart-health-checkin.github.io) (the apex) | Home page, shared look (`assets/`), this file | `/`, `/assets/`, `/ktc/` on every push to `main` | Nothing versioned | Each section's `nav.json`, in the browser |
 | [spec](https://github.com/smart-health-checkin/spec) | The draft spec, explainers, capture inspector, conformance fixtures | `/spec/` on every push to `main` | `vX.Y.Z` tags (fixtures and conformance cases) | client (release tarball) |
 | [client](https://github.com/smart-health-checkin/client) | The JavaScript library, its docs and demos | `/client/` on every push to `main`, and after every release | `vX.Y.Z` GitHub releases: npm tarball plus hosted bundles | spec fixtures (tag) |
-| [connectathon](https://github.com/smart-health-checkin/connectathon) | Scenarios, Testing EHR, testing wallet, participant registry, results | `/connectathon/` on push to `main`, hourly, and on issue changes | Nothing versioned | client (release tarball), the Android APK (latest release) |
+| [connectathon](https://github.com/smart-health-checkin/connectathon) | Scenarios, Testing EHR, Testing Wallet, participant registry, results | `/connectathon/` on push to `main`, hourly, and on issue changes | Nothing versioned | client (release tarball), the Android APK (latest release) |
 | [android-wallet](https://github.com/smart-health-checkin/android-wallet) | The reference Android wallet | Nothing | `vX.Y.Z` GitHub releases: the APK | spec fixtures (tag), client (release tarball, for test vectors) |
 | [swift](https://github.com/smart-health-checkin/swift) | The Swift package | Nothing | `vX.Y.Z` tags (Swift Package Manager installs from tags; current `v0.2.0`) | spec fixtures (tag) |
 | [notes](https://github.com/smart-health-checkin/notes), ktc (archived) | Working notes; the retired KTC site | Nothing | Nothing | Nothing |
@@ -44,7 +44,7 @@ Nothing is shared by copying files between repos, and there are no submodules.
 | Push to `main` in apex, spec, client, or connectathon | That repo's site builds and deploys |
 | Push a `vX.Y.Z` tag in client | `release.yml`: checks the tag matches `package.json`, tests, attaches the tarball and bundles to a GitHub release, then runs the client's Pages deploy, which serves the new `/client/lib/X.Y.Z/` |
 | Push a `vX.Y.Z` tag in android-wallet | `android-release.yml`: builds and signs the APK and attaches it to a release; `releases/latest/download/…` now serves it |
-| connectathon site deploy completes | connectathon's self-test drives the live Testing EHR against the live testing wallet; failures open an issue |
+| connectathon site deploy completes | connectathon's self-test drives the live Testing EHR against the live Testing Wallet; failures open an issue |
 | Nightly | connectathon: self-test, and the Android end-to-end run against the latest APK |
 | Hourly | connectathon: site rebuild (registry, results) and wallet-registry liveness |
 | Push or PR in android-wallet, swift | Their tests, which fetch the pinned spec fixtures and conformance cases |
@@ -235,7 +235,7 @@ runs.
 
 ### Tool bar
 
-For full-screen tools (the Testing EHR, the testing wallet, the demos) that
+For full-screen tools (the Testing EHR, the Testing Wallet, the demos) that
 need their own controls in place of the site menus:
 
 ```html
@@ -301,9 +301,9 @@ in both.
 - **Contrast:** every text token reaches 4.5:1 on every background token in
   both modes, and each status color on its own wash. Put text on
   `--brand-wash` in `--brand-ink`, not `--brand`.
-- **Older names still work:** `--success-wash`, `--warning-wash`,
-  `--danger-wash`, and `--info-wash` are the status washes and change in
-  dark. `--success`, `--warning`, `--danger`, `--info`, `--brand-bright`,
+- **Other color names:** `--success-wash`, `--warning-wash`,
+  `--danger-wash`, and `--info-wash` are aliases for the status washes and
+  change in dark. `--success`, `--warning`, `--danger`, `--info`, `--brand-bright`,
   and the spectrum colors (`--smart-red` …) are fills for dots, rules, and
   bars, the same in both modes; don't use them for text.
 - **Surfaces in dark:** `--bg-alt` is a step darker than `--bg` (a well)
@@ -524,15 +524,15 @@ narrowest one that covers a change; CI runs the rest.
 | --- | --- | --- | --- |
 | The spec is consistent: requirement IDs unique, JSON examples valid, CDDL matches the real capture, Appendix A recomputes from it, old anchors and links resolve | spec `scripts/build-pages.sh` | spec push to `main` and PRs | `bun install && scripts/build-pages.sh` (needs `gem install cddl`) |
 | Each implementation meets the spec, one capability at a time | the spec's [conformance tests](https://github.com/smart-health-checkin/spec/tree/main/conformance), with a `known-failures.json` per implementation (all empty today) | CI in client, android-wallet, swift, connectathon | each repo's test command (see its `AGENTS.md`) |
-| Each wallet's output is accepted by the reference verifier | `spec-conformance/reference/verify-wallet-output.ts` on credentials the wallet built | android-wallet and swift CI | see android-wallet and swift `AGENTS.md` |
+| Each wallet's output is accepted by the reference verifier | `spec-conformance/reference/verify-wallet-output.ts` on credentials the wallet built | android-wallet and swift CI | see the [android-wallet](https://github.com/smart-health-checkin/android-wallet/blob/main/AGENTS.md) and [swift](https://github.com/smart-health-checkin/swift/blob/main/AGENTS.md) `AGENTS.md` |
 | The client library's hosted bundles run, and every docs link resolves | client `scripts/build-pages.sh` (`verify-lib.ts`, `check-links.ts`) | client push to `main` | `scripts/build-pages.sh` |
-| The web flow works end to end: the live [Testing EHR](https://smart-health-checkin.org/connectathon/testing-ehr/) against the live [testing wallet](https://smart-health-checkin.org/connectathon/testing-wallet/), every scenario and fault, warnings where the spec says warn | connectathon `scripts/self-test.ts` | after every connectathon deploy, and nightly | `bun scripts/self-test.ts` (or against a local build: see connectathon `AGENTS.md`) |
+| The web flow works end to end: the live [Testing EHR](https://smart-health-checkin.org/connectathon/testing-ehr/) against the live [Testing Wallet](https://smart-health-checkin.org/connectathon/testing-wallet/), every scenario and fault, warnings where the spec says warn | connectathon `scripts/self-test.ts` | after every connectathon deploy, and nightly | `bun scripts/self-test.ts` (or against a local build: see connectathon [`AGENTS.md`](https://github.com/smart-health-checkin/connectathon/blob/main/AGENTS.md)) |
 | Chrome on Android, the reference Android wallet, and the Testing EHR work together | connectathon `scripts/android-e2e.ts` | nightly on an emulator in CI, with the latest APK | `bun scripts/android-e2e.ts --release` with an emulator or phone |
-| A native Android app can check in directly and through the browser (bridge page, message channel, large responses) | android-wallet `tools/verifier-app-e2e/run.ts` | local only (needs an emulator with Chrome) | see android-wallet `AGENTS.md` |
+| A native Android app can check in directly and through the browser (bridge page, message channel, large responses) | android-wallet `tools/verifier-app-e2e/run.ts` | local only (needs an emulator with Chrome) | see android-wallet [`AGENTS.md`](https://github.com/smart-health-checkin/android-wallet/blob/main/AGENTS.md) |
 | The reference EHR demo still works against a wallet | connectathon `scripts/e2e-demo.ts` | by hand | `bun scripts/e2e-demo.ts` |
 
 Before a release, the releasing repo's own checks must pass. After a release,
-bump the consumers and let their CI run (see Releasing). After a change that
+bump the consumers and let their CI run (see [Releasing](#releasing)). After a change that
 crosses repos, run the self-test.
 
 ## Native apps
@@ -558,8 +558,8 @@ A native app checks in through the web flow ([Platform notes](https://smart-heal
 The connectathon collects free-text experience reports through a Google Form
 (<https://forms.gle/fXJf1H3zfZcyTNum7>). Reports are public, credited with the
 name and organization people give. The prompts that help people write a report,
-and the "Share your experience" page that offers them, live in connectathon
-(details in its `AGENTS.md`).
+and the [Share your experience](https://smart-health-checkin.org/connectathon/share.html) page that offers them, live in connectathon
+(details in its [`AGENTS.md`](https://github.com/smart-health-checkin/connectathon/blob/main/AGENTS.md)).
 
 To change the form, edit `connectathon/tools/experience-form/form.gs`, open the
 form's editor, three-dot menu > Apps Script, paste, and run `buildForm`. It

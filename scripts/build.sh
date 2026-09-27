@@ -29,7 +29,7 @@ cp ktc/closing-the-loop.html "$OUT/ktc/closing-the-loop/index.html"
 {
   echo "# SMART Health Check-in"
   echo
-  echo "> An open protocol for pre-visit check-in: a provider's page asks the patient's health app for what the visit needs over the W3C Digital Credentials API, and the verified answer comes back to that same page."
+  echo "> A draft open standard for pre-visit check-in: a clinic's page asks, over the W3C Digital Credentials API, for what the visit needs, and the patient answers from a health app of their choice that already has their records. The answer comes back to that same page."
   echo
   echo "## Sections"
   echo "- [Specification]($ORIGIN/spec/llms.txt): the protocol, explainers, wire format, conformance fixtures"
