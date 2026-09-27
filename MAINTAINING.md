@@ -548,9 +548,9 @@ A native app checks in through the web flow ([Platform notes](https://smart-heal
 - **`/.well-known/assetlinks.json`** in the apex vouches for the example app,
   so Chrome grants the channel. It names the app's package
   (`org.smarthealthit.checkin.verifier`) and the SHA-256 of its signing
-  certificate. Change it whenever either changes. Google's link service takes
-  a few minutes to notice, and Chrome caches the old answer until its HTTP
-  cache is cleared.
+  certificate. Change it whenever either changes. Google's Digital Asset Links
+  service caches the file for up to an hour, and Chrome caches its answer
+  too, so allow an hour or clear Chrome's cache while testing.
 - **`verifier-app`** in android-wallet is the example app, with both the
   direct Credential Manager path and the browser path, and the end-to-end test
   above.
