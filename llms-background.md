@@ -47,7 +47,7 @@ Each section has one llms.txt: this background, then the full text of the sectio
 All at https://github.com/smart-health-checkin.
 
 - **spec:** the specification, explainers, fixtures, and conformance cases, tagged `vX.Y.Z`.
-- **client:** the JavaScript and TypeScript library `@smart-health-checkin/client`: `runCheckin`, the `<smart-checkin-picker>` element, and a React component for Verifiers, plus modules for web wallets, the kiosk hand-off, FHIR, testing, and the wire format. Install it from a GitHub release's tarball (it isn't on the npm registry) or load hosted ES modules; the Overview at /client/ has the current install line.
+- **client:** the JavaScript and TypeScript library `@smart-health-checkin/client`: `runCheckin`, the `<smart-checkin-picker>` element, and a React component for Verifiers, plus modules for web wallets, the kiosk hand-off, FHIR, testing, and the wire format. Install it from a GitHub release's tarball (it isn't on the npm registry) or load hosted ES modules; the Install page at /client/docs/install.html has the current install line, the entry points, and the hosted files.
 - **android-wallet:** the reference Android wallet and an example native Verifier app, which checks in through Credential Manager directly or through the browser in a Custom Tab. Each release carries both APKs.
 - **swift:** a Swift package with the Verifier and Wallet roles, installed with Swift Package Manager from tags. There is no reference iOS wallet app yet.
 - **connectathon** and **smart-health-checkin.github.io:** the connectathon site, and the home page with the shared look and this background.
