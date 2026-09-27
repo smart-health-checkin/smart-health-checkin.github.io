@@ -130,7 +130,7 @@ Not versioned. Push to `main` and they deploy.
   pages, and `nav.json` locations (`SECTIONS` in `assets/site-chrome.js`).
   Adding a whole new section is the only menu change that touches the apex.
   If nothing in a section's menu links to its front page, the chrome adds
-  "Overview" at the top. A menu with more than 8 links shows in two
+  "Overview" at the top. The [footer](#footer) shows every menu in full. A menu with more than 8 links shows in two
   columns; menus never scroll inside.
 - **Links between sections:** every reference to something documented
   elsewhere (a step, a section, a page, a tool) links to exactly that place,
@@ -331,9 +331,25 @@ it stays put while scrolling.
 
 ### Footer
 
-`<div data-smart-footer></div>`: one column per section (Overview, then its
-first five other menu links, groups flattened) and a Project column (Home,
-GitHub).
+`<div data-smart-footer></div>` becomes `<footer class="smart-footer"
+role="contentinfo">`: a site map with one column per section (Spec,
+Developers, Demos, Connectathon), then Project (Home, GitHub), and a line of
+fine print.
+
+- **Each column is exactly that section's menu:** the same groups, entries,
+  order, and labels, from the same `nav.json` through the same code
+  (`menuEntries` in `assets/site-chrome.js`), including the "Overview" rule
+  ([Menus](#the-shared-site)). Nothing is cut off, so adding a page to a
+  menu adds it to the footer. The column heading links to the section's
+  front page; group labels are small-caps subheads (`<h3>`), and each list
+  is labelled by its heading. The current page is marked
+  `aria-current="page"`.
+- **Layout:** five columns at 64rem and wider, three below, two below
+  46rem, where every link is at least 44px tall. Nothing collapses.
+- **Layout shift:** the footer's frame renders at once; its contents arrive
+  together once every `nav.json` has loaded. The footer is the last thing on
+  the page, so it grows downward without moving anything. Put nothing after
+  the placeholder that shows on screen.
 
 ### Colors and dark mode
 

@@ -23,7 +23,7 @@
  *   <div data-smart-topbar="tool" …></div>     the compact bar for tool pages
  *   <nav data-smart-breadcrumb></nav>          Section › Group › Page
  *     (data-current, data-parent-href, data-parent-label: see MAINTAINING.md)
- *   <div data-smart-footer></div>              the footer
+ *   <div data-smart-footer></div>              the footer: every section's menu as a site map
  *
  * It also adds a copy button to every <pre> (opt out with data-no-copy), and
  * the site's tab icons to a page that declares none.
@@ -120,12 +120,16 @@
     return (items || []).reduce(function (all, i) { return all.concat(i.group ? i.items : [i]); }, []);
   }
 
-  /** The link to a section's front page that opens its menu, unless the menu already has one. */
-  function homeLink(section, items) {
+  /**
+   * What a section's menu shows: its nav.json entries, with "Overview" (the
+   * front page) added first when nothing in them links there. The desktop
+   * menus, the phone panel, and the footer all render this one list, so they
+   * can't disagree.
+   */
+  function menuEntries(section, items) {
+    items = items || [];
     var has = leaves(items).some(function (i) { return samePage(i.href, section.href); });
-    if (has) return '';
-    var cur = samePage(section.href, path) ? ' aria-current="page"' : '';
-    return '<div class="dd-block"><a href="' + esc(section.href) + '"' + cur + '><span class="dd-label">Overview</span></a></div>';
+    return has ? items : [{ href: section.href, label: 'Overview', note: '' }].concat(items);
   }
 
   function slug(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-'); }
@@ -168,7 +172,7 @@
       +     esc(section.label) + CARET
       +   '</button>'
       +   '<div class="dropdown-menu' + wide + '" id="' + id + '" hidden>'
-      +     '<div class="dd-body">' + homeLink(section, items) + menuBody(items) + '</div>'
+      +     '<div class="dd-body">' + menuBody(menuEntries(section, items)) + '</div>'
       +   '</div>'
       + '</div>';
   }
@@ -205,7 +209,7 @@
     var items = menus[section.label];
     var active = section.match.test(path);
     var id = 'smart-panel-' + slug(section.label);
-    var body = homeLink(section, items) + (items && items.length ? menuBody(items) : '');
+    var body = menuBody(menuEntries(section, items));
     return '<div class="smart-panel-section" data-section="' + esc(section.label) + '">'
       +   '<button type="button" class="smart-panel-toggle" aria-expanded="' + (active ? 'true' : 'false') + '" aria-controls="' + id + '">'
       +     '<span>' + esc(section.label) + '</span>' + CARET
@@ -330,33 +334,59 @@
 
   // ---------------------------------------------------------------- footer
 
-  // One column per section, filled from the same nav.json files as the bar.
-  function footerColumn(section) {
-    var items = menus[section.label];
-    // The column starts with the section's front page, so skip menu items
-    // that point there too.
-    var rest = leaves(items).filter(function (i) { return !samePage(i.href, section.href); });
-    var links = [{ href: section.href, label: 'Overview' }].concat(rest.slice(0, 5));
-    return '<div data-section="' + esc(section.label) + '"><h2>' + esc(section.label) + '</h2><ul>'
-      + links.map(function (l) { return '<li><a href="' + esc(l.href) + '">' + esc(l.label) + '</a></li>'; }).join('')
-      + '</ul></div>';
+  // A site map: one column per section showing exactly what its menu shows
+  // (menuEntries: the same groups, entries, order, and labels), then Project.
+  // The columns fill in once every nav.json has loaded, all at once, so
+  // nothing already on screen moves (see refreshMenus).
+
+  function footerLinks(links, labelledBy) {
+    return '<ul aria-labelledby="' + labelledBy + '">'
+      + links.map(function (l) {
+        var cur = samePage(l.href, path) ? ' aria-current="page"' : '';
+        var ext = l.external ? ' target="_blank" rel="noopener"' : '';
+        return '<li><a href="' + esc(l.href) + '"' + cur + ext + '>' + esc(l.label) + '</a></li>';
+      }).join('')
+      + '</ul>';
   }
 
+  function footerColumn(section) {
+    var id = 'smart-foot-' + slug(section.label);
+    var body = '', run = [];
+    function flush() { if (run.length) body += footerLinks(run, id); run = []; }
+    menuEntries(section, menus[section.label]).forEach(function (i) {
+      if (!i.group) { run.push(i); return; }
+      flush();
+      var gid = id + '-' + slug(i.label);
+      body += '<h3 id="' + gid + '">' + esc(i.label) + '</h3>' + footerLinks(i.items, gid);
+    });
+    flush();
+    return '<section class="site-foot-col" data-section="' + esc(section.label) + '" aria-labelledby="' + id + '">'
+      + '<h2 id="' + id + '"><a href="' + esc(section.href) + '">' + esc(section.label) + '</a></h2>'
+      + body
+      + '</section>';
+  }
+
+  function footerInner() {
+    return '<nav class="site-foot-cols" aria-label="Site map">'
+      +   SECTIONS.map(footerColumn).join('')
+      +   '<section class="site-foot-col" aria-labelledby="smart-foot-project"><h2 id="smart-foot-project">Project</h2>'
+      +     footerLinks([
+              { href: '/', label: 'Home' },
+              { href: 'https://github.com/smart-health-checkin', label: 'GitHub ↗', external: true }
+            ], 'smart-foot-project')
+      +   '</section>'
+      + '</nav>'
+      + '<div class="smart-footer-fine">'
+      +   '<span>An open protocol and reference implementation for pre-visit check-in.</span>'
+      +   '<span class="spacer"></span><span>Apache-2.0</span>'
+      + '</div>';
+  }
+
+  /** The footer's frame; its contents arrive with the menus. */
   function footer() {
-    var cols = SECTIONS.map(footerColumn).join('')
-      + '<div><h2>Project</h2><ul>'
-      +   '<li><a href="/">Home</a></li>'
-      +   '<li><a href="https://github.com/smart-health-checkin" target="_blank" rel="noopener">GitHub ↗</a></li>'
-      + '</ul></div>';
-    return '<footer class="smart-footer">'
+    return '<footer class="smart-footer" role="contentinfo">'
       +   spectrum()
-      +   '<div class="site-foot-inner">'
-      +     '<div class="site-foot-cols">' + cols + '</div>'
-      +     '<div class="smart-footer-fine">'
-      +       '<span>An open protocol and reference implementation for pre-visit check-in.</span>'
-      +       '<span class="spacer"></span><span>Apache-2.0</span>'
-      +     '</div>'
-      +   '</div>'
+      +   '<div class="site-foot-inner"></div>'
       + '</footer>';
   }
 
@@ -542,10 +572,9 @@
       });
     }
     Array.prototype.forEach.call(document.querySelectorAll('[data-smart-breadcrumb]'), renderBreadcrumb);
-    SECTIONS.forEach(function (section) {
-      var col = document.querySelector('.smart-footer [data-section="' + section.label + '"]');
-      if (col && menus[section.label]) col.outerHTML = footerColumn(section);
-    });
+    // The footer grows below everything else, so filling it moves nothing.
+    var foot = document.querySelector('.smart-footer .site-foot-inner');
+    if (foot) foot.innerHTML = footerInner();
   }
 
   // ---------- Copy buttons on code blocks ----------------------------

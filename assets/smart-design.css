@@ -973,17 +973,45 @@ html.smart-menu-open, html.smart-menu-open body { overflow: hidden; }
    every part of the site.
    --------------------------------------------------------------------- */
 .site-foot-inner { max-width: var(--container-wide, 72rem); margin: 0 auto; padding: 8px 24px 0; }
-.site-foot-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: var(--space-6); }
+/* The site map: one column per section, each exactly what that section's
+   menu shows (groups under small-caps subheads), then Project. Five across
+   on desktop, three below 64rem, two below 46rem, where every link is a
+   44px tap target. Nothing is cut off. */
+.site-foot-cols {
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-6) var(--space-5); align-items: start;
+}
+.site-foot-col { min-width: 0; }
 .site-foot-cols h2,
-.site-foot-cols h4 {
-  margin: 0 0 var(--space-3); padding: 0; border: 0; line-height: 1.3; font-family: var(--font-sans); font-size: var(--fs-xs); font-weight: 700;
+.site-foot-cols h3 { margin: 0; padding: 0; border: 0; font-family: var(--font-sans); line-height: 1.3; }
+.site-foot-cols h2 {
+  margin-bottom: var(--space-3); font-size: var(--fs-sm); font-weight: 700; letter-spacing: 0; color: var(--fg-1);
+}
+.site-foot-cols h2 a { display: inline; padding: 0; color: inherit; font-size: inherit; font-weight: inherit; }
+.site-foot-cols h3 {
+  margin: var(--space-4) 0 var(--space-1); font-size: var(--fs-xs); font-weight: 700;
   letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--fg-3);
 }
-.site-foot-cols ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
-.site-foot-cols a { color: var(--fg-1); text-decoration: none; font-size: var(--fs-sm); }
-/* Six links per section column; reserved so the footer doesn't grow when the menus load. */
-.site-foot-cols [data-section] ul { min-height: 10.4rem; }
-.site-foot-cols a:hover { color: var(--brand); }
+.site-foot-cols h2 + h3 { margin-top: 0; }
+.site-foot-cols ul { list-style: none; margin: 0; padding: 0; }
+.site-foot-cols li { margin: 0; padding: 0; }
+.site-foot-cols a {
+  display: inline-block; padding: 3px 0; color: var(--fg-1); text-decoration: none;
+  font-size: var(--fs-sm); line-height: 1.35; border-radius: var(--radius-sm);
+}
+.site-foot-cols a:hover { color: var(--brand-ink); text-decoration: underline; }
+.site-foot-cols a[aria-current="page"] { color: var(--brand-ink); font-weight: 600; }
+@media (max-width: 63.99rem) {
+  .site-foot-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 46rem) {
+  .site-foot-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5) var(--space-4); }
+  .site-foot-cols h2 a,
+  .site-foot-cols ul a { display: flex; align-items: center; min-height: 44px; padding: 2px 0; box-sizing: border-box; }
+  .site-foot-cols h2 { margin-bottom: 0; }
+  .site-foot-cols h3 { margin-top: var(--space-3); }
+  .site-foot-cols h2 + h3 { margin-top: var(--space-1); }
+}
 .smart-footer .smart-footer-fine {
   max-width: var(--container-wide, 72rem); margin: var(--space-6) auto 0; padding: var(--space-4) 24px 0;
   border-top: 1px solid var(--border); display: flex; gap: var(--space-4); font-size: var(--fs-sm); color: var(--fg-3);

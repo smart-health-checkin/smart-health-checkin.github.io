@@ -23,7 +23,7 @@ how to release. Read it before changing anything that crosses repositories.
   backward compatible, and update that section with any change.
 - Test chrome changes on live pages by serving the local files through
   request interception (headless Chromium, 390x844 and 1280x800): no
-  sideways scroll, bar height, menu contents against each `nav.json`,
+  sideways scroll, bar height, menu and footer contents against each `nav.json`,
   keyboard (Tab, Enter, Escape), and layout shift.
 - `llms-background.md` is the hand-written background every section's
   `llms.txt` starts with; the sections fetch it from the live site at
