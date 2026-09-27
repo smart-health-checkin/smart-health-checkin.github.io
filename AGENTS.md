@@ -26,10 +26,9 @@ how to release. Read it before changing anything that crosses repositories.
   sideways scroll, bar height, menu contents against each `nav.json`,
   keyboard (Tab, Enter, Escape), and layout shift.
 - `llms-background.md` is the hand-written background every section's
-  `llms-full.txt` starts with; the sections fetch it from the live site at
-  build time. `scripts/llms.ts` writes the root `llms.txt` (the sections'
-  files first) and `llms-full.txt` (the background, the home page, and the
-  KTC deck). Keep the background accurate against the spec and about 1,000
+  `llms.txt` starts with; the sections fetch it from the live site at
+  build time. `scripts/llms.ts` writes the root `llms.txt`: the background,
+  the home page, and the KTC deck. Keep the background accurate against the spec and about 1,000
   words. See MAINTAINING.md, "llms.txt", including which parts of
   `scripts/llms.ts` must match the sections' copies.
 - Menus belong to the sections: each publishes `nav.json`. Only edit

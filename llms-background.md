@@ -35,7 +35,7 @@ SMART Health Check-in 1.0 is an editor's draft for implementer review. The proje
 
 ## The site
 
-Each section has an llms.txt index and, beside it, an llms-full.txt with the full text of its pages.
+Each section has one llms.txt: this background, then the full text of the section's pages.
 
 - **Home** (https://smart-health-checkin.org/): the home page, this background, and the shared look. https://smart-health-checkin.org/llms.txt
 - **Spec** (/spec/): the draft specification, its explainers, and a capture inspector. https://smart-health-checkin.org/spec/llms.txt

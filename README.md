@@ -2,7 +2,7 @@
 
 The apex of smart-health-checkin.org: the home page, the design system and
 shared chrome in `assets/` that every section loads, the root `llms.txt`, and
-`llms-background.md`, the background every section's `llms-full.txt` starts with.
+`llms-background.md`, the background every section's `llms.txt` starts with.
 
 The sections are separate repos that deploy themselves; GitHub mounts each
 one beneath this site by name:

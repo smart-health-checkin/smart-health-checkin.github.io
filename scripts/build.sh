@@ -23,10 +23,9 @@ cp -r .well-known "$OUT/.well-known"
 mkdir -p "$OUT/ktc/closing-the-loop"
 cp ktc/closing-the-loop.html "$OUT/ktc/closing-the-loop/index.html"
 
-# llms-background.md is the background every section's llms-full.txt starts
-# with; the sections fetch it from here at build time. llms.txt indexes this
-# section and every other section's files; llms-full.txt is the background and
-# this repo's pages (scripts/llms.ts).
+# llms-background.md is the background every section's llms.txt starts with;
+# the sections fetch it from here at build time. This section's llms.txt is the
+# background, the home page, and the KTC deck (scripts/llms.ts).
 cp llms-background.md "$OUT/llms-background.md"
 bun scripts/llms.ts "$OUT"
 

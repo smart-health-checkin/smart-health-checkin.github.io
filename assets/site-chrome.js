@@ -173,22 +173,20 @@
       + '</div>';
   }
 
-  /** The section root whose llms files describe this page; the apex if none. */
+  /** The section root whose llms.txt describes this page; the apex if none. */
   function llmsRoot() {
     var s = currentSection();
     return s ? s.llms : '/';
   }
 
-  /** GitHub and the llms.txt files: the "⋯" menu on desktop, the panel's foot on phone. */
+  /** GitHub and the section's llms.txt: the "⋯" menu on desktop, the panel's foot on phone. */
   function extraLinks() {
     var root = llmsRoot();
     return '<a href="https://github.com/smart-health-checkin" target="_blank" rel="noopener">'
       +   '<span class="dd-label">GitHub ↗</span><span class="dd-note">Source for every part of the project</span></a>'
-      + '<button type="button" class="dd-action" data-llms-copy="' + esc(root + 'llms-full.txt') + '">'
-      +   COPY_ICON + '<span><span class="dd-label">Copy llms-full.txt</span><span class="dd-note">This section in one file, for an AI assistant</span></span></button>'
-      + '<a href="' + esc(root + 'llms.txt') + '"><span class="dd-label">llms.txt</span><span class="dd-note">Index of this section</span></a>'
-      + '<a href="' + esc(root + 'llms-full.txt') + '"><span class="dd-label">llms-full.txt</span><span class="dd-note">This section in one file</span></a>'
-      + (root === '/' ? '' : '<a href="/llms.txt"><span class="dd-label">Whole site llms.txt</span><span class="dd-note">Every section, and the shared background</span></a>');
+      + '<button type="button" class="dd-action" data-llms-copy="' + esc(root + 'llms.txt') + '">'
+      +   COPY_ICON + '<span><span class="dd-label">Copy llms.txt</span><span class="dd-note">This section in one file, for an AI assistant</span></span></button>'
+      + '<a href="' + esc(root + 'llms.txt') + '"><span class="dd-label">llms.txt</span><span class="dd-note">The shared background and every page of this section, as text</span></a>';
   }
 
   function desktopNav() {

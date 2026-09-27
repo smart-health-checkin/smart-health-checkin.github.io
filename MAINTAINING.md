@@ -24,7 +24,7 @@ spec (vX.Y.Z) ──► client, android-wallet, swift, connectathon (fixtures, c
 client (vX.Y.Z)    ──► connectathon, spec, android-wallet, swift CI, outside developers
 android-wallet (vX.Y.Z) ──► connectathon's Android CI, download links
 apex (assets/, runtime) ──► every page on the domain
-apex (llms-background.md, at build) ──► spec, client, connectathon (llms-full.txt)
+apex (llms-background.md, at build) ──► spec, client, connectathon (llms.txt)
 each section (nav.json, runtime) ──► the apex's menus
 ```
 
@@ -142,19 +142,21 @@ Not versioned. Push to `main` and they deploy.
 
 ### llms.txt
 
-Every section publishes `llms.txt` and `llms-full.txt` at its root: `/`,
-`/spec/`, `/client/` (which also covers the Demos), and `/connectathon/`.
-The "⋯" menu and the phone panel offer the current section's two files,
-"Copy llms-full.txt", and the root `llms.txt`; `llms` in `SECTIONS`
-(`assets/site-chrome.js`) names the root whose files a section's pages
-offer. Pages outside every section, such as `/ktc/`, offer the root's.
+Every section publishes one file, `llms.txt`, at its root: `/`, `/spec/`,
+`/client/` (which also covers the Demos), and `/connectathon/`. It is the
+shared background followed by the full text of every page in the section.
+The "⋯" menu and the phone panel offer the current section's `llms.txt`
+and "Copy llms.txt"; `llms` in `SECTIONS` (`assets/site-chrome.js`) names
+the root whose file a section's pages offer. Pages outside every section,
+such as `/ktc/`, offer the root's.
 
 - **The background** is [`llms-background.md`](llms-background.md) in this
   repo, served at `/llms-background.md`. It is written by hand, once, for an
   AI model helping someone understand or build with the project: what it is,
   the roles, how a check-in flows, the transports, the project's status,
   the sections and their llms.txt URLs, the repositories, and the terms.
-  Every `llms-full.txt` starts with it. Check any change against the spec,
+  Every `llms.txt` starts with it, and its list of sections is how one
+  section's file points to the others. Check any change against the spec,
   keep it about 1,000 words, and update its section list when a section is
   added or renamed. The sections pick up a change at their next build
   (connectathon hourly; spec and client on their next push).
@@ -163,31 +165,28 @@ offer. Pages outside every section, such as `/ktc/`, offer the root's.
   with three tries, and fails the build if it can't or if the text doesn't
   start with `# SMART Health Check-in`. Fetching the published copy keeps
   the sections independent of this repo's checkout, as loading `/assets/`
-  at runtime does. To build offline, or to try a change to the background
+  at runtime does; it is why the background stays published on its own. To build offline, or to try a change to the background
   before it deploys, set
   `LLMS_BACKGROUND=../smart-health-checkin.github.io/llms-background.md`.
-- **`llms.txt`** follows [llmstxt.org](https://llmstxt.org/): an H1, a
-  one-paragraph summary, a pointer to the background, the section's pages
-  grouped as in its `nav.json` with each entry's note, a link to its
-  `llms-full.txt`, and the other sections' files. The root's lists the
-  sections first.
-- **`llms-full.txt`** is the background, then the full text of every page
-  the section publishes, converted from the built HTML to Markdown: only
-  `<main>`, without the chrome, navigation, scripts, or styles; headings,
-  code blocks, and tables kept; links absolute; a diagram replaced by its
-  `<title>` and `<desc>`. Each page starts with its H1 and a `Source: <url>`
-  line.
+- **`llms.txt`** is an H1, a one-paragraph summary, the background, then
+  the full text of every page the section publishes, in menu order,
+  converted from the built HTML to Markdown: only `<main>`, without the
+  chrome, navigation, scripts, or styles; headings, code blocks, and
+  tables kept; links absolute; a diagram replaced by its `<title>` and
+  `<desc>`. Each page starts with its H1 and a `Source: <url>`
+  line. Published Markdown or text files named in the script's `TEXTS`
+  (the connectathon's prompts) follow as they are. The root's is the
+  background, the home page, and the Closing the Loop deck.
 - **The scripts:** each repo has its own `scripts/llms.ts`, run at the end
   of its build. They have the same shape: the block at the top (title,
-  summary, `nav.json`, pages skipped with a reason, extra links) is the
-  section's own, and the rest (the HTML-to-Markdown conversion, the
+  summary, `nav.json`, pages skipped with a reason, extra pages and text
+  files) is the section's own, and the rest (the HTML-to-Markdown conversion, the
   background fetch, the checks, and the `SECTIONS` list) is the same in all
   four. Change those parts in every repo together.
 - **Checks:** a section's build fails if a page in its built site is neither
-  in `llms-full.txt` nor in the script's `SKIP` list, or if a link in its
-  `llms.txt` into the section names a file the build didn't produce. Links
-  into other sections are checked only on the live site, since each section
-  deploys on its own.
+  in `llms.txt` nor in the script's `SKIP` list (each skip has a reason), or
+  if a page or text file the script names (`PAGES`, `TEXTS`) is missing
+  from the build.
 - **Adding a section:** add it to `SECTIONS` in `assets/site-chrome.js`
   (with `llms`), to `SECTIONS` in every `scripts/llms.ts`, and to the
   background's list of sections.
@@ -251,13 +250,13 @@ class="smart-topbar">`.
 - **64rem and wider:** 56px tall, sticky. The logo and "SMART Health
   Check-in" link to `/` (there is no Home item). Then one button per section
   (Spec, Developers, Demos, Connectathon) opening that section's menu, and a
-  "⋯" button with GitHub, "Copy llms-full.txt", and the current section's
-  llms.txt and llms-full.txt, plus the whole site's llms.txt ([llms.txt](#llmstxt)).
+  "⋯" button with GitHub, "Copy llms.txt", and the current section's
+  llms.txt ([llms.txt](#llmstxt)).
 - **Below 64rem:** 52px tall, one row: the logo, the current section's name
   (a link to its front page; "SMART Check-in" outside any section below
   46rem), and a "Menu" button. Menu opens a full-screen panel listing every
   section as a button that expands its menu in place (the current section
-  starts expanded), then GitHub and the llms.txt links. The bar slides away
+  starts expanded), then GitHub, "Copy llms.txt", and the llms.txt link. The bar slides away
   while scrolling down and comes back on scrolling up, unless the reader
   asks for reduced motion.
 - **Accessibility:** menus are disclosures (`<button aria-expanded
@@ -588,7 +587,7 @@ narrowest one that covers a change; CI runs the rest.
 | The spec is consistent: requirement IDs unique, JSON examples valid, CDDL matches the real capture, Appendix A recomputes from it, old anchors and links resolve | spec `scripts/build-pages.sh` | spec push to `main` and PRs | `bun install && scripts/build-pages.sh` (needs `gem install cddl`) |
 | Each implementation meets the spec, one capability at a time | the spec's [conformance tests](https://github.com/smart-health-checkin/spec/tree/main/conformance), with a `known-failures.json` per implementation (all empty today) | CI in client, android-wallet, swift, connectathon | each repo's test command (see its `AGENTS.md`) |
 | Each wallet's output is accepted by the reference verifier | `spec-conformance/reference/verify-wallet-output.ts` on credentials the wallet built | android-wallet and swift CI | see the [android-wallet](https://github.com/smart-health-checkin/android-wallet/blob/main/AGENTS.md) and [swift](https://github.com/smart-health-checkin/swift/blob/main/AGENTS.md) `AGENTS.md` |
-| Each section's llms.txt links resolve in its build, and llms-full.txt has every page it publishes | each repo's `scripts/llms.ts`, at the end of its build | every build | that repo's build |
+| Each section's llms.txt has every page it publishes, or skips it with a reason, and every file it names exists | each repo's `scripts/llms.ts`, at the end of its build | every build | that repo's build |
 | The client library's hosted bundles run, and every docs link resolves | client `scripts/build-pages.sh` (`verify-lib.ts`, `check-links.ts`) | client push to `main` | `scripts/build-pages.sh` |
 | The web flow works end to end: the live [Testing EHR](https://smart-health-checkin.org/connectathon/testing-ehr/) against the live [Testing Wallet](https://smart-health-checkin.org/connectathon/testing-wallet/), every scenario and fault, warnings where the spec says warn | connectathon `scripts/self-test.ts` | after every connectathon deploy, and nightly | `bun scripts/self-test.ts` (or against a local build: see connectathon [`AGENTS.md`](https://github.com/smart-health-checkin/connectathon/blob/main/AGENTS.md)) |
 | Chrome on Android, the reference Android wallet, and the Testing EHR work together | connectathon `scripts/android-e2e.ts` | nightly on an emulator in CI, with the latest APK | `bun scripts/android-e2e.ts --release` with an emulator or phone |

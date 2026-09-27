@@ -11,7 +11,7 @@ SRC="${SRC_DIR:-..}"
 
 OUT_DIR="$OUT" KTC_DIR="$SRC/ktc" scripts/build.sh >/dev/null
 OUT="$(cd "$OUT" && pwd)"
-# The sections' llms-full.txt starts with this checkout's background, not the live one.
+# The sections' llms.txt starts with this checkout's background, not the live one.
 export LLMS_BACKGROUND="$PWD/llms-background.md"
 
 if [ -d "$SRC/client" ]; then
