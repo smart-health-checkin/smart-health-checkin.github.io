@@ -582,5 +582,6 @@ needs only the `forms.currentonly` scope, set in the project's
 | Where | What | Used for |
 | --- | --- | --- |
 | android-wallet repo secret `ANDROID_DEBUG_KEYSTORE_B64` | The shared development signing key (certificate SHA-256 `84:64:3E:B6:…:DD:A4`) | Signing every wallet release and `verifier-app`, so releases install over each other and `assetlinks.json` matches. The release fails if the APK has any other signer. |
+| connectathon repo ruleset "Protect main" | Blocks force-pushes to and deletion of `main`; no other rules, no bypass list | Keeping `main`'s history safe while people, agents, and workflows (including the participant-PR auto-merge) push and merge directly |
 | client repo setting | Immutable releases | Published client releases can't be edited or replaced |
 | `GITHUB_TOKEN` in workflows | Built in | Client's site build reads releases; connectathon's build reads result issues |
