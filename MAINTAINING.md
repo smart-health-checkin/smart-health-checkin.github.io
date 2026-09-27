@@ -13,15 +13,15 @@ repositories.
 | [spec](https://github.com/smart-health-checkin/spec) | The draft spec, explainers, capture inspector, conformance fixtures | `/spec/` on every push to `main` | `vX.Y.Z` tags (fixtures and conformance cases) | client (release tarball) |
 | [client](https://github.com/smart-health-checkin/client) | The JavaScript library, its docs and demos | `/client/` on every push to `main`, and after every release | `vX.Y.Z` GitHub releases: npm tarball plus hosted bundles | spec fixtures (tag) |
 | [connectathon](https://github.com/smart-health-checkin/connectathon) | Scenarios, Testing EHR, Testing Wallet, participant registry, results | `/connectathon/` on push to `main`, hourly, and on issue changes | Nothing versioned | client (release tarball), the Android APK (latest release) |
-| [android-wallet](https://github.com/smart-health-checkin/android-wallet) | The reference Android wallet | Nothing | `vX.Y.Z` GitHub releases: the APK | spec fixtures (tag), client (release tarball, for test vectors) |
-| [swift](https://github.com/smart-health-checkin/swift) | The Swift package | Nothing | `vX.Y.Z` tags (Swift Package Manager installs from tags; current `v0.2.0`) | spec fixtures (tag) |
+| [android-wallet](https://github.com/smart-health-checkin/android-wallet) | The reference Android wallet | Nothing | `vX.Y.Z` GitHub releases: the wallet APK and the example Verifier app's APK | spec fixtures (tag), client (release tarball, for test vectors) |
+| [swift](https://github.com/smart-health-checkin/swift) | The Swift package | Nothing | `vX.Y.Z` tags (Swift Package Manager installs from tags; current `v0.2.0`) | spec fixtures (tag), client (release tarball, CI's reference verifier) |
 | [notes](https://github.com/smart-health-checkin/notes), ktc (archived) | Working notes; the retired KTC site | Nothing | Nothing | Nothing |
 
 Dependencies only run one way:
 
 ```
 spec (vX.Y.Z) ──► client, android-wallet, swift, connectathon (fixtures, conformance cases)
-client (vX.Y.Z)    ──► connectathon, spec, android-wallet, outside developers
+client (vX.Y.Z)    ──► connectathon, spec, android-wallet, swift CI, outside developers
 android-wallet (vX.Y.Z) ──► connectathon's Android CI, download links
 apex (assets/, runtime) ──► every page on the domain
 each section (nav.json, runtime) ──► the apex's menus
@@ -43,11 +43,12 @@ Nothing is shared by copying files between repos, and there are no submodules.
 | --- | --- |
 | Push to `main` in apex, spec, client, or connectathon | That repo's site builds and deploys |
 | Push a `vX.Y.Z` tag in client | `release.yml`: checks the tag matches `package.json`, tests, attaches the tarball and bundles to a GitHub release, then runs the client's Pages deploy, which serves the new `/client/lib/X.Y.Z/` |
-| Push a `vX.Y.Z` tag in android-wallet | `android-release.yml`: builds and signs the APK and attaches it to a release; `releases/latest/download/…` now serves it |
+| Push a `vX.Y.Z` tag in android-wallet | `android-release.yml`: builds and signs both APKs (wallet and example Verifier app) and attaches them to a release; `releases/latest/download/…` now serves them |
 | connectathon site deploy completes | connectathon's self-test drives the live Testing EHR against the live Testing Wallet; failures open an issue |
 | Nightly | connectathon: self-test, and the Android end-to-end run against the latest APK |
 | Hourly | connectathon: site rebuild (registry, results) and wallet-registry liveness |
 | Push or PR in android-wallet, swift | Their tests, which fetch the pinned spec fixtures and conformance cases |
+| Push to `main` or PR in connectathon | `check.yml`: `bun run check` and `bun test tests` (conformance included); `validate.yml` (FHIR validation) when `Questionnaire/`, `responses/`, or the testing wallet's data change |
 | Pull request in spec | `check.yml`: the full spec build and its checks, without deploying |
 | Push to a non-`main` branch or PR in client | `ci.yml`: typecheck, tests, conformance |
 | Participant PR in connectathon | Validated, and auto-merged when the author owns the participant file |
@@ -69,6 +70,7 @@ nightly run (the APK, which connectathon takes from `latest`).
    - connectathon `package.json`
    - spec `package.json`
    - android-wallet `package.json` (then `bun run vectors` if the wire format changed)
+   - swift `.github/workflows/test.yml` (the tarball its CI checks wallet output with; no lockfile)
 
 The build fails if a doc pins a `/client/lib/<version>/` that has no release,
 so a missed pin shows up before deploy.
