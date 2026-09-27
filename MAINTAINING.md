@@ -140,7 +140,7 @@ Not versioned. Push to `main` and they deploy.
   thing is itself the best place to start, the front page is that thing and
   the menu lists it by its own name: the Spec's front page is the
   specification (its URL is the one people cite, with requirement anchors
-  such as `/spec/#XV-2`, and it opens with a "Start here" box linking every
+  such as `/spec/#XV-2`, and its "How to read this document" section links every
   explainer), and the Demos' front page is the clinic check-in demo. The
   home page is the site-wide overview for anyone. Give a new section the
   kind of front page that fits, and say why in its AGENTS.md if it differs.
