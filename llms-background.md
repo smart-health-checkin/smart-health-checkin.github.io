@@ -31,7 +31,7 @@ The request and response are the same whichever way they travel.
 
 ## Status
 
-SMART Health Check-in 1.0 is an editor's draft for implementer review. The project publishes reference implementations, conformance tests, and test apps: a demo web wallet, the SMART Testing Wallet, the SMART Testing EHR, and a reference Android wallet. No health app that patients use today supports it yet. A connectathon is planned; its date isn't set.
+SMART Health Check-in 1.0 is an editor's draft for implementer review. The project publishes reference implementations, conformance tests, and test apps: a demo web wallet, the SMART Testing Wallet, the SMART Testing EHR, and a reference Android wallet. No health app that patients use today supports it yet. The next connectathon, Kill the Clipboard Connectathon #2, is online on Tuesday, November 3, 2026, 2:00–5:00 PM Eastern.
 
 ## The site
 
